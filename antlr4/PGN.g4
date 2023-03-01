@@ -164,7 +164,7 @@ BRACE_COMMENT
 /// A percent sign appearing in any other place other than the first position in a
 /// line does not trigger the escape mechanism.
 ESCAPE
- : {getCharPositionInLine() == 0}? '%' ~[\r\n]* -> skip
+ : {charPositionInLine == 0}? '%' ~[\r\n]* -> skip
  ;
 
 SPACES
