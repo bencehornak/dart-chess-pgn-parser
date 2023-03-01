@@ -6,8 +6,8 @@ repository: https://github.com/bencehornak/dart-chess-pgn-parser
 environment:
   sdk: '>=2.19.2 <3.0.0'
 
-# dependencies:
-#   path: ^1.8.0
+dependencies:
+  antlr4: ^4.12.0
 
 dev_dependencies:
   lints: ^2.0.0
