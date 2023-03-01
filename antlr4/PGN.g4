@@ -92,13 +92,18 @@ element_sequence
 ///               <SAN-move>
 ///               <numeric-annotation-glyph>
 element
- : move_number_indication
+ : full_move_number_indication
+ | black_move_number_indication
  | san_move
  | NUMERIC_ANNOTATION_GLYPH
  ;
 
-move_number_indication
+full_move_number_indication
  : INTEGER PERIOD?
+ ;
+
+black_move_number_indication
+ : INTEGER PERIOD PERIOD PERIOD
  ;
 
 san_move
