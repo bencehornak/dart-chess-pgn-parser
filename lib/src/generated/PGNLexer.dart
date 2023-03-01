@@ -76,7 +76,7 @@ class PGNLexer extends Lexer {
   }
   bool _ESCAPE_sempred(dynamic _localctx, int predIndex) {
     switch (predIndex) {
-      case 0: return getCharPositionInLine() == 0;
+      case 0: return charPositionInLine == 0;
     }
     return true;
   }
