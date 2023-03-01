@@ -77,12 +77,19 @@ abstract class PGNListener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitElement(ElementContext ctx);
 
-  /// Enter a parse tree produced by [PGNParser.move_number_indication].
+  /// Enter a parse tree produced by [PGNParser.full_move_number_indication].
   /// [ctx] the parse tree
-  void enterMove_number_indication(Move_number_indicationContext ctx);
-  /// Exit a parse tree produced by [PGNParser.move_number_indication].
+  void enterFull_move_number_indication(Full_move_number_indicationContext ctx);
+  /// Exit a parse tree produced by [PGNParser.full_move_number_indication].
   /// [ctx] the parse tree
-  void exitMove_number_indication(Move_number_indicationContext ctx);
+  void exitFull_move_number_indication(Full_move_number_indicationContext ctx);
+
+  /// Enter a parse tree produced by [PGNParser.black_move_number_indication].
+  /// [ctx] the parse tree
+  void enterBlack_move_number_indication(Black_move_number_indicationContext ctx);
+  /// Exit a parse tree produced by [PGNParser.black_move_number_indication].
+  /// [ctx] the parse tree
+  void exitBlack_move_number_indication(Black_move_number_indicationContext ctx);
 
   /// Enter a parse tree produced by [PGNParser.san_move].
   /// [ctx] the parse tree

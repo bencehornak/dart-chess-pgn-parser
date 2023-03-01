@@ -92,11 +92,19 @@ class PGNBaseListener implements PGNListener {
 
   /// The default implementation does nothing.
   @override
-  void enterMove_number_indication(Move_number_indicationContext ctx) {}
+  void enterFull_move_number_indication(Full_move_number_indicationContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitMove_number_indication(Move_number_indicationContext ctx) {}
+  void exitFull_move_number_indication(Full_move_number_indicationContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterBlack_move_number_indication(Black_move_number_indicationContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitBlack_move_number_indication(Black_move_number_indicationContext ctx) {}
 
   /// The default implementation does nothing.
   @override
