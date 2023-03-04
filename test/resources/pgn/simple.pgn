@@ -1,0 +1,42 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2023.01.08"]
+[Round "-"]
+[White "LeastWorstChessPlayer"]
+[Black "bencehornak"]
+[Result "0-1"]
+[CurrentPosition "7k/p5p1/7p/7K/7Q/1P6/P4q1r/R7 w - -"]
+[Timezone "UTC"]
+[ECO "B12"]
+[ECOUrl "https://www.chess.com/openings/Caro-Kann-Defense-Advance-Short-Variation-with-4-Nf3"]
+[UTCDate "2023.01.08"]
+[UTCTime "09:09:27"]
+[WhiteElo "1161"]
+[BlackElo "1157"]
+[TimeControl "600"]
+[Termination "bencehornak won by resignation"]
+[StartTime "09:09:27"]
+[EndDate "2023.01.08"]
+[EndTime "09:27:25"]
+[Link "https://www.chess.com/game/live/66907867387"]
+[WhiteUrl "https://images.chesscomfiles.com/uploads/v1/user/156791155.7f651577.50x50o.100d25c520db.png"]
+[WhiteCountry "67"]
+[WhiteTitle ""]
+[BlackUrl "https://images.chesscomfiles.com/uploads/v1/user/152703559.740dd1ad.50x50o.2e25d7441ff5.jpeg"]
+[BlackCountry "54"]
+[BlackTitle ""]
+
+1. e4 c6 2. d4 d5 3. e5 Bf5 4. Nf3 h6 5. Bd3 Bxd3 6. Qxd3 e6 7. O-O Nd7 8. Nc3
+Ne7 9. Be3 Nf5 10. Bf4 $6 c5 11. Ne2 cxd4 12. Nexd4 Nxd4 13. Nxd4 Bc5 14. b3 Qh4
+15. g3 Qh3 16. Nf3 O-O 17. c4 (17. c4 Nb6 18. Rac1 Rfd8 19. cxd5 Nxd5 20. Qe4
+Bb6 {-1.09}) 17... Rad8 $6 {Loses a pawn} 18. cxd5 exd5 19. Qxd5 Rfe8 $2 (19... g5
+20. b4 Bb6 21. Be3 Bxe3 22. fxe3 Nf6 23. Qc4 Ng4 24. Qe2 {-0.08}) 20. Rfe1 $4 Bb6
+$9 (20... Nxe5 21. Qxe5 (21. Rxe5 {-2.33} 21... Rxd5 22. Rxe8+ Kh7) 21... Rxe5
+22. Rxe5 Ba3 23. Rae1 f6 24. R5e4 Rd3 25. Bxh6 Qxh6 26. R1e3 Rxe3 27. Rxe3
+{-4.03}) (20... Bb6 21. Qb5 Qf5 22. Rad1 g5 23. Be3 Qxf3 24. Rxd7 Rxd7 25. Qxd7
+{-0.21}) 21. Qxb7 $9 f6 $9 22. exf6 $6 Nxf6 23. Ne5 $2 Bxf2+ $3 24. Kxf2 Qxh2+ $2 25.
+Kf3 $9 Qh5+ 26. g4 $4 Qh3+ $1 27. Kf2 Nxg4+ $2 28. Nxg4 Qxg4 $2 29. Rxe8+ Rxe8 30. Qd5+
+Kh8 31. Be5 $4 Qf5+ $1 32. Qf3 $2 Qxe5 33. Qh1 $2 Qe2+ $1 34. Kg3 Re3+ 35. Kf4 Qf2+ 36.
+Kg4 Rg3+ 37. Kh5 Rg2 $9 38. Qh4 $6 (38. Qh4 Qf7# {0-1}) 38... Rh2 $9
+{The game could have continued like this...} (38... Rh2 39. Qxh2 Qf3+ 40. Kg6 Qf6+ 41.
+Kh5 Qg5# {-M3}) 0-1
