@@ -68,5 +68,62 @@ void main() {
       ];
       expect(actualPath, expectedDfsPath);
     });
+    test('traverse() board argument is correct', () {
+      // This object is only used to accessed the move_to_san method (which should be static IMO)
+      final chess = Chess();
+
+      List<String> actualPath = [];
+      game!.traverse(
+          (Chess board, AnnotatedMove lastMove, List<AnnotatedMove> nextMoves) {
+        actualPath.add(board.ascii);
+      });
+      List<String> expectedDfsPath = [
+        '   +------------------------+\n'
+            ' 8 | r  n  b  q  k  b  n  r |\n'
+            ' 7 | p  p  p  p  p  p  p  p |\n'
+            ' 6 | .  .  .  .  .  .  .  . |\n'
+            ' 5 | .  .  .  .  .  .  .  . |\n'
+            ' 4 | .  .  .  P  .  .  .  . |\n'
+            ' 3 | .  .  .  .  .  .  .  . |\n'
+            ' 2 | P  P  P  .  P  P  P  P |\n'
+            ' 1 | R  N  B  Q  K  B  N  R |\n'
+            '   +------------------------+\n'
+            '     a  b  c  d  e  f  g  h\n',
+        '   +------------------------+\n'
+            ' 8 | r  n  b  q  k  b  n  r |\n'
+            ' 7 | p  p  p  p  p  p  p  p |\n'
+            ' 6 | .  .  .  .  .  .  .  . |\n'
+            ' 5 | .  .  .  .  .  .  .  . |\n'
+            ' 4 | .  .  .  .  P  .  .  . |\n'
+            ' 3 | .  .  .  .  .  .  .  . |\n'
+            ' 2 | P  P  P  P  .  P  P  P |\n'
+            ' 1 | R  N  B  Q  K  B  N  R |\n'
+            '   +------------------------+\n'
+            '     a  b  c  d  e  f  g  h\n',
+        '   +------------------------+\n'
+            ' 8 | r  n  b  q  k  b  n  r |\n'
+            ' 7 | p  p  p  p  .  p  p  p |\n'
+            ' 6 | .  .  .  .  .  .  .  . |\n'
+            ' 5 | .  .  .  .  p  .  .  . |\n'
+            ' 4 | .  .  .  .  P  .  .  . |\n'
+            ' 3 | .  .  .  .  .  .  .  . |\n'
+            ' 2 | P  P  P  P  .  P  P  P |\n'
+            ' 1 | R  N  B  Q  K  B  N  R |\n'
+            '   +------------------------+\n'
+            '     a  b  c  d  e  f  g  h\n',
+        '   +------------------------+\n'
+            ' 8 | r  n  b  q  k  b  n  r |\n'
+            ' 7 | p  p  p  p  .  p  p  p |\n'
+            ' 6 | .  .  .  .  p  .  .  . |\n'
+            ' 5 | .  .  .  .  .  .  .  . |\n'
+            ' 4 | .  .  .  .  P  .  .  . |\n'
+            ' 3 | .  .  .  .  .  .  .  . |\n'
+            ' 2 | P  P  P  P  .  P  P  P |\n'
+            ' 1 | R  N  B  Q  K  B  N  R |\n'
+            '   +------------------------+\n'
+            '     a  b  c  d  e  f  g  h\n',
+      ];
+      expect(actualPath, expectedDfsPath);
+    });
   });
 }
