@@ -23,7 +23,7 @@ class GameWithVariations {
       callback(
         Chess(), // TODO implement
         node.move,
-        [], // TODO implement
+        node.children.map((child) => child.move).toList(),
       );
       stack.addAll(node.children.reversed);
     }
