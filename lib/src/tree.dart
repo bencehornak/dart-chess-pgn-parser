@@ -11,11 +11,22 @@ class GameWithVariations {
   GameWithVariations(List<GameNode> firstMoves)
       : firstMoves = List.unmodifiable(firstMoves);
 
+  /// Traverse the tree in DFS order.
   void traverse(
       void Function(Chess board, AnnotatedMove lastMove,
               List<AnnotatedMove> nextMoves)
           callback) {
-    throw UnimplementedError();
+    List<GameNode> stack = [];
+    stack.addAll(firstMoves.reversed);
+    while (stack.isNotEmpty) {
+      GameNode node = stack.removeLast();
+      callback(
+        Chess(), // TODO implement
+        node.move,
+        [], // TODO implement
+      );
+      stack.addAll(node.children.reversed);
+    }
   }
 }
 
