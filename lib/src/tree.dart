@@ -10,6 +10,13 @@ class GameWithVariations {
 
   GameWithVariations(List<GameNode> firstMoves)
       : firstMoves = List.unmodifiable(firstMoves);
+
+  void traverse(
+      void Function(Chess board, AnnotatedMove lastMove,
+              List<AnnotatedMove> nextMoves)
+          callback) {
+    throw UnimplementedError();
+  }
 }
 
 class GameNode {
