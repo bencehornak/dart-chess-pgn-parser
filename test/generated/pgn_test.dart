@@ -26,8 +26,8 @@ Future<void> main() async {
   test('PGNParser.checkVersion()', () {
     PGNParser.checkVersion();
   });
-  test('Parse simple.pgn', () async {
-    final input = await InputStream.fromPath('test/resources/pgn/simple.pgn');
+  test('Parse advanced.pgn', () async {
+    final input = await InputStream.fromPath('test/resources/pgn/advanced.pgn');
     final lexer = PGNLexer(input);
     final tokens = CommonTokenStream(lexer);
     final parser = PGNParser(tokens);
