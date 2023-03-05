@@ -16,17 +16,46 @@ class GameWithVariations {
       void Function(Chess board, AnnotatedMove lastMove,
               List<AnnotatedMove> nextMoves)
           callback) {
-    List<GameNode> stack = [];
-    stack.addAll(firstMoves.reversed);
-    while (stack.isNotEmpty) {
-      GameNode node = stack.removeLast();
-      callback(
-        Chess(), // TODO implement
-        node.move,
-        node.children.map((child) => child.move).toList(),
-      );
-      stack.addAll(node.children.reversed);
+    final board = Chess();
+
+    // A stack data structure used by the DFS algorithm.
+    //
+    // It contains:
+    //   1. GameNode objects, whose meaning is to step one level deeper in the
+    //      tree in the corresponding direction
+    //   2. nulls, which encode to step one level back in the tree
+    //
+    // The last element of the stack will be the next one being visited, that's
+    // why elements are added in reverse order.
+    List<GameNode?> stack = [];
+    void addToStack(List<GameNode> children) {
+      stack.addAll(children
+          .expand((e) => [
+                e, // step deeper
+                null, // step back
+              ])
+          .toList()
+          .reversed);
     }
+
+    addToStack(firstMoves);
+    while (stack.isNotEmpty) {
+      GameNode? node = stack.removeLast();
+      if (node == null) {
+        board.undo();
+      } else {
+        board.move(node.move);
+        callback(
+          board,
+          node.move,
+          node.children.map((child) => child.move).toList(),
+        );
+        addToStack(node.children);
+      }
+    }
+
+    assert(board.move_number == 1,
+        'We should arrive back to the start after performing the DFS');
   }
 }
 
