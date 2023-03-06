@@ -108,6 +108,15 @@ class GameWithVariations {
     buffer.write(')');
     return buffer.toString();
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! GameWithVariations) return false;
+    return toString() == (other).toString();
+  }
+
+  @override
+  int get hashCode => toString().hashCode;
 }
 
 class GameNode {
