@@ -39,4 +39,13 @@ void main() {
       expect(tree.toString(), expectedGameTree);
     });
   });
+  group('advanced', () {
+    test('fromString().parse() returns the tree', () async {
+      String input =
+          await File('test/resources/pgn/advanced.pgn').readAsString();
+      final reader = PgnReader.fromString(input);
+
+      expect(() => reader.parse(), returnsNormally);
+    });
+  });
 }
