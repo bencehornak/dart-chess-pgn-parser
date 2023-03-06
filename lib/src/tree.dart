@@ -65,7 +65,7 @@ class GameWithVariations {
     while (stack.isNotEmpty) {
       GameNode? node = stack.removeLast();
       if (node == null) {
-        board.undo();
+        board.undo_move();
       } else {
         board.move(node.move);
         callback(
