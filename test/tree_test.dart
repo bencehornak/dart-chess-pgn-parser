@@ -3,9 +3,8 @@ import 'package:chess_pgn_parser/src/tree.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Game tree tests', () {
-    GameWithVariations game = _buildGame();
-
+  GameWithVariations game = _buildGame();
+  group('traverse()', () {
     test('traverse() lastMove argument is correct', () {
       // This object is only used to accessed the move_to_san method (which should be static IMO)
       final chess = Chess();
