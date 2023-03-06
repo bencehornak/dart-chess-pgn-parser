@@ -33,7 +33,33 @@ void main() {
                         null,
                         null,
                         'e5'),
-                    []),
+                    [
+                      // Nc3
+                      GameNode(
+                          AnnotatedMove(
+                              Color.WHITE,
+                              Chess.SQUARES['b1'],
+                              Chess.SQUARES['c3'],
+                              0,
+                              PieceType.KNIGHT,
+                              null,
+                              null,
+                              'Nc3'),
+                          [
+                            // Nf6
+                            GameNode(
+                                AnnotatedMove(
+                                    Color.BLACK,
+                                    Chess.SQUARES['g8'],
+                                    Chess.SQUARES['f6'],
+                                    0,
+                                    PieceType.KNIGHT,
+                                    null,
+                                    null,
+                                    'Nf6'),
+                                []),
+                          ]),
+                    ]),
                 // e6
                 GameNode(
                     AnnotatedMove(
