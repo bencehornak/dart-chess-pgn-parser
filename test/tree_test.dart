@@ -114,6 +114,18 @@ void main() {
       expect(actualPath, expectedDfsPath);
     });
   });
+
+  test('toString()', () {
+    expect(game.toString(), '''
+GameWithVariations(
+  1. d4
+  1. e4
+    1... e5
+      2. Nc3
+        2... Nf6
+    1... e6
+)''');
+  });
 }
 
 GameWithVariations _buildGame() {
