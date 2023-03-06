@@ -14,12 +14,7 @@ void main() {
           (Chess board, AnnotatedMove lastMove, List<AnnotatedMove> nextMoves) {
         actualPath.add(chess.move_to_san(lastMove));
       });
-      List<String> expectedDfsPath = [
-        'd4',
-        'e4',
-        'e5',
-        'e6',
-      ];
+      List<String> expectedDfsPath = ['d4', 'e4', 'e5', 'Nc3', 'Nf6', 'e6'];
       expect(actualPath, expectedDfsPath);
     });
     test('traverse() nextMoves argument is correct', () {
@@ -35,7 +30,9 @@ void main() {
       List<List<String>> expectedDfsPath = [
         [], // d4
         ['e5', 'e6'], // e4
-        [], // e5
+        ['Nc3'], // e5
+        ['Nf6'], // Nc3
+        [], // Nf6
         [], // e6
       ];
       expect(actualPath, expectedDfsPath);
@@ -83,6 +80,28 @@ void main() {
         '   +------------------------+\n'
             ' 8 | r  n  b  q  k  b  n  r |\n'
             ' 7 | p  p  p  p  .  p  p  p |\n'
+            ' 6 | .  .  .  .  .  .  .  . |\n'
+            ' 5 | .  .  .  .  p  .  .  . |\n'
+            ' 4 | .  .  .  .  P  .  .  . |\n'
+            ' 3 | .  .  N  .  .  .  .  . |\n'
+            ' 2 | P  P  P  P  .  P  P  P |\n'
+            ' 1 | R  .  B  Q  K  B  N  R |\n'
+            '   +------------------------+\n'
+            '     a  b  c  d  e  f  g  h\n',
+        '   +------------------------+\n'
+            ' 8 | r  n  b  q  k  b  .  r |\n'
+            ' 7 | p  p  p  p  .  p  p  p |\n'
+            ' 6 | .  .  .  .  .  n  .  . |\n'
+            ' 5 | .  .  .  .  p  .  .  . |\n'
+            ' 4 | .  .  .  .  P  .  .  . |\n'
+            ' 3 | .  .  N  .  .  .  .  . |\n'
+            ' 2 | P  P  P  P  .  P  P  P |\n'
+            ' 1 | R  .  B  Q  K  B  N  R |\n'
+            '   +------------------------+\n'
+            '     a  b  c  d  e  f  g  h\n',
+        '   +------------------------+\n'
+            ' 8 | r  n  b  q  k  b  n  r |\n'
+            ' 7 | p  p  p  p  .  p  p  p |\n'
             ' 6 | .  .  .  .  p  .  .  . |\n'
             ' 5 | .  .  .  .  .  .  .  . |\n'
             ' 4 | .  .  .  .  P  .  .  . |\n'
@@ -116,7 +135,33 @@ GameWithVariations _buildGame() {
               GameNode(
                   AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
                       Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 'e5'),
-                  []),
+                  [
+                    // Nc3
+                    GameNode(
+                        AnnotatedMove(
+                            Color.WHITE,
+                            Chess.SQUARES['b1'],
+                            Chess.SQUARES['c3'],
+                            0,
+                            PieceType.KNIGHT,
+                            null,
+                            null,
+                            'Nc3'),
+                        [
+                          // Nf6
+                          GameNode(
+                              AnnotatedMove(
+                                  Color.BLACK,
+                                  Chess.SQUARES['g8'],
+                                  Chess.SQUARES['f6'],
+                                  0,
+                                  PieceType.KNIGHT,
+                                  null,
+                                  null,
+                                  'Nf6'),
+                              []),
+                        ]),
+                  ]),
               // e6
               GameNode(
                   AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
