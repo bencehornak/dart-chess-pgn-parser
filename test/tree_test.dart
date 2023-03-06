@@ -126,6 +126,26 @@ GameWithVariations(
     1... e6
 )''');
   });
+
+  group('operator==()', () {
+    test('true', () {
+      expect(game, _buildGame());
+    });
+
+    test('false', () {
+      expect(game, isNot(GameWithVariations([])));
+    });
+  });
+
+  group('hashCode', () {
+    test('equals', () {
+      expect(game.hashCode, _buildGame().hashCode);
+    });
+
+    test('does not equal', () {
+      expect(game.hashCode, isNot(GameWithVariations([]).hashCode));
+    });
+  });
 }
 
 GameWithVariations _buildGame() {
