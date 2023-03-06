@@ -1,9 +1,21 @@
 import 'package:chess/chess.dart';
 
 class AnnotatedMove extends Move {
-  AnnotatedMove(super.color, super.from, super.to, super.flags, super.piece,
-      super.captured, super.promotion);
-  AnnotatedMove.fromMove(Move move)
+  // Let's cache the SAN notation for better performance
+  String san;
+
+  AnnotatedMove(
+    super.color,
+    super.from,
+    super.to,
+    super.flags,
+    super.piece,
+    super.captured,
+    super.promotion,
+    this.san,
+  );
+
+  AnnotatedMove.fromMove(Move move, String san)
       : this(
           move.color,
           move.from,
@@ -12,6 +24,7 @@ class AnnotatedMove extends Move {
           move.piece,
           move.captured,
           move.promotion,
+          san,
         );
 }
 

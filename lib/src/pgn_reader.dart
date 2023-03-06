@@ -120,7 +120,7 @@ class _MoveTextParseTreeListener extends PGNListener {
     _board.move(move);
     _log.finest('Board (move=${_board.move_number}):\n${_board.ascii}');
 
-    final annotatedMove = AnnotatedMove.fromMove(move);
+    final annotatedMove = AnnotatedMove.fromMove(move, san);
     final node = GameNode(annotatedMove, []);
     if (nodeStack.isNotEmpty) {
       final parent = nodeStack.last;
@@ -161,7 +161,7 @@ class _MoveTextParseTreeListener extends PGNListener {
       var poppedNode = nodeStack.removeLast();
       _poppedBeforeVariationStack.add(poppedNode);
       _log.finest(
-          'First move color in variation does not match next move color => popped move ${_board.move_to_san(poppedNode.move)}');
+          'First move color in variation does not match next move color => popped move ${poppedNode.move.san}');
     } else {
       _poppedBeforeVariationStack.add(null);
       _log.finest(
@@ -184,7 +184,7 @@ class _MoveTextParseTreeListener extends PGNListener {
     final node = nodeStack.removeLast();
     if (nodeStack.isEmpty) {
       _log.finest(
-          'No node left in the node stack => adding move ${_board.move_to_san(node.move)} to the first moves');
+          'No node left in the node stack => adding move ${node.move.san} to the first moves');
       firstMoves.add(node);
     }
     // A full move or a black move is expected after the variation, which will

@@ -10,23 +10,37 @@ void main() {
           // d4
           GameNode(
               AnnotatedMove(Color.WHITE, Chess.SQUARES['d2'],
-                  Chess.SQUARES['d4'], 0, PieceType.PAWN, null, null),
+                  Chess.SQUARES['d4'], 0, PieceType.PAWN, null, null, 'd4'),
               []),
           // e4
           GameNode(
               AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'],
-                  Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null),
+                  Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null, 'e4'),
               // Depth: 2nd half move
               [
                 // e5
                 GameNode(
-                    AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
-                        Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null),
+                    AnnotatedMove(
+                        Color.BLACK,
+                        Chess.SQUARES['e7'],
+                        Chess.SQUARES['e5'],
+                        0,
+                        PieceType.PAWN,
+                        null,
+                        null,
+                        'e5'),
                     []),
                 // e6
                 GameNode(
-                    AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
-                        Chess.SQUARES['e6'], 0, PieceType.PAWN, null, null),
+                    AnnotatedMove(
+                        Color.BLACK,
+                        Chess.SQUARES['e7'],
+                        Chess.SQUARES['e6'],
+                        0,
+                        PieceType.PAWN,
+                        null,
+                        null,
+                        'e6'),
                     [])
               ])
         ]);
