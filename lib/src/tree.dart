@@ -26,6 +26,9 @@ class AnnotatedMove extends Move {
           move.promotion,
           san,
         );
+
+  @override
+  String toString() => san;
 }
 
 class GameWithVariations {
@@ -79,6 +82,31 @@ class GameWithVariations {
 
     assert(board.move_number == 1,
         'We should arrive back to the start after performing the DFS');
+  }
+
+  @override
+  String toString() {
+    String formatMove(Color color, int moveNumber, String san) {
+      Color lastMoveColor = color == Color.WHITE ? Color.BLACK : Color.WHITE;
+      if (lastMoveColor == Color.BLACK) {
+        // The moveNumber is increased before black in the chess lib. It is
+        // probably a bug.
+        --moveNumber;
+      }
+      final dots = lastMoveColor == Color.WHITE ? '.' : '...';
+      final halfMoveNumber =
+          (moveNumber - 1) * 2 + (lastMoveColor == Color.BLACK ? 1 : 0);
+      return '${'  ' * (halfMoveNumber)}$moveNumber$dots $san';
+    }
+
+    final buffer = StringBuffer();
+    buffer.write('GameWithVariations(\n');
+    traverse((board, lastMove, nextMoves) {
+      buffer.write(
+          '  ${formatMove(board.turn, board.move_number, lastMove.san)}\n');
+    });
+    buffer.write(')');
+    return buffer.toString();
   }
 }
 
