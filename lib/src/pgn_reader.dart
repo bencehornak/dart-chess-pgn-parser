@@ -206,6 +206,15 @@ class _MoveTextParseTreeListener extends PGNListener {
   }
 
   @override
+  void exitMovetext_section(Movetext_sectionContext ctx) {
+    _log.finer('Exiting move text section context');
+    _log.finest('Adding move ${nodeStack.first.move.san} to the first moves');
+
+    firstMoves.add(nodeStack.first);
+    nodeStack.clear();
+  }
+
+  @override
   void noSuchMethod(Invocation invocation) {
     // just ignore the remaining events
   }
