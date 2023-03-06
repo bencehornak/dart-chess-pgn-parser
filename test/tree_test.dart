@@ -4,46 +4,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Game tree tests', () {
-    GameWithVariations game = GameWithVariations(
-        // Depth: 1st half move
-        [
-          // d4
-          GameNode(
-              AnnotatedMove(Color.WHITE, Chess.SQUARES['d2'],
-                  Chess.SQUARES['d4'], 0, PieceType.PAWN, null, null, 'd4'),
-              []),
-          // e4
-          GameNode(
-              AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'],
-                  Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null, 'e4'),
-              // Depth: 2nd half move
-              [
-                // e5
-                GameNode(
-                    AnnotatedMove(
-                        Color.BLACK,
-                        Chess.SQUARES['e7'],
-                        Chess.SQUARES['e5'],
-                        0,
-                        PieceType.PAWN,
-                        null,
-                        null,
-                        'e5'),
-                    []),
-                // e6
-                GameNode(
-                    AnnotatedMove(
-                        Color.BLACK,
-                        Chess.SQUARES['e7'],
-                        Chess.SQUARES['e6'],
-                        0,
-                        PieceType.PAWN,
-                        null,
-                        null,
-                        'e6'),
-                    [])
-              ])
-        ]);
+    GameWithVariations game = _buildGame();
+
     test('traverse() lastMove argument is correct', () {
       // This object is only used to accessed the move_to_san method (which should be static IMO)
       final chess = Chess();
@@ -134,4 +96,33 @@ void main() {
       expect(actualPath, expectedDfsPath);
     });
   });
+}
+
+GameWithVariations _buildGame() {
+  return GameWithVariations(
+      // Depth: 1st half move
+      [
+        // d4
+        GameNode(
+            AnnotatedMove(Color.WHITE, Chess.SQUARES['d2'], Chess.SQUARES['d4'],
+                0, PieceType.PAWN, null, null, 'd4'),
+            []),
+        // e4
+        GameNode(
+            AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'], Chess.SQUARES['e4'],
+                0, PieceType.PAWN, null, null, 'e4'),
+            // Depth: 2nd half move
+            [
+              // e5
+              GameNode(
+                  AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
+                      Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 'e5'),
+                  []),
+              // e6
+              GameNode(
+                  AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
+                      Chess.SQUARES['e6'], 0, PieceType.PAWN, null, null, 'e6'),
+                  [])
+            ])
+      ]);
 }
