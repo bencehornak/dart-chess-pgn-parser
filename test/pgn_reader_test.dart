@@ -46,7 +46,9 @@ void main() {
           await File('test/resources/pgn/advanced.pgn').readAsString();
       final reader = PgnReader.fromString(input);
 
-      expect(() => reader.parse(), returnsNormally);
+      List<GameWithVariations>? database;
+      expect(() => database = reader.parse(), returnsNormally);
+      expect(() => database!.toString(), returnsNormally);
     });
   });
   group('invalid input', () {
