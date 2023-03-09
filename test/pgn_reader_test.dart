@@ -48,4 +48,17 @@ void main() {
       expect(() => reader.parse(), returnsNormally);
     });
   });
+  group('invalid input', () {
+    test('fromString().parse() throws PgnReaderException', () async {
+      String input =
+          await File('test/resources/pgn/invalid.pgn').readAsString();
+      final reader = PgnReader.fromString(input);
+
+      expect(
+          () => reader.parse(),
+          throwsA(isA<PgnReaderException>()
+              .having((error) => error.ctx.start, 'ctx.start', 1)
+              .having((error) => error.ctx.stop, 'ctx.stop', 1)));
+    });
+  });
 }
