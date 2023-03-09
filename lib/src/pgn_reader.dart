@@ -116,8 +116,8 @@ class _MoveTextParseTreeListener extends PGNListener {
         ctx, _nextMoveColor == _board.turn, "${_board.turn} move was expected");
 
     final nextMoves = _board.generate_moves();
-    final move =
-        nextMoves.firstWhere((move) => _board.move_to_san(move) == san);
+    final move = nextMoves.firstWhere((move) => _board.move_to_san(move) == san,
+        orElse: () => _failWithContextFeedback(ctx, 'Invalid move \'$san\''));
 
     _board.move(move);
     _log.finest('Board (move=${_board.move_number}):\n${_board.ascii}');
@@ -221,6 +221,9 @@ class _MoveTextParseTreeListener extends PGNListener {
 
   void _assertWithContextFeedback(
       ParserRuleContext ctx, bool condition, String message) {
-    if (!condition) throw PgnReaderException(ctx, message);
+    if (!condition) _failWithContextFeedback(ctx, message);
   }
+
+  Never _failWithContextFeedback(ParserRuleContext ctx, String message) =>
+      throw PgnReaderException(ctx, message);
 }
