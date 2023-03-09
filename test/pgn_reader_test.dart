@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:antlr4/antlr4.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
@@ -57,8 +58,22 @@ void main() {
       expect(
           () => reader.parse(),
           throwsA(isA<PgnReaderException>()
-              .having((error) => error.ctx.start, 'ctx.start', 1)
-              .having((error) => error.ctx.stop, 'ctx.stop', 1)));
+              .having(
+                  (error) => error.ctx.start,
+                  'ctx.start',
+                  isA<Token>()
+                      // start Token
+                      .having((token) => token.line, 'line', 1)
+                      .having((token) => token.charPositionInLine,
+                          'charPositionInLine', 0))
+              .having(
+                  (error) => error.ctx.stop,
+                  'ctx.stop',
+                  isA<Token>()
+                      // stop Token
+                      .having((token) => token.line, "line", 1)
+                      .having((token) => token.charPositionInLine,
+                          "charPositionInLine", 0))));
     });
   });
 }
