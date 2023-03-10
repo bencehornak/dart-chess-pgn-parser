@@ -89,7 +89,6 @@ class _MoveTextParseTreeListener extends PGNListener {
   /// If `null` is pushed to the end of the stack, it means that no node was
   /// popped before we went into the variation.
   final List<GameNode?> _poppedBeforeVariationStack = [];
-  Color? _nextMoveColor = Color.WHITE;
 
   final List<GameNode> firstMoves = [];
 
@@ -97,9 +96,9 @@ class _MoveTextParseTreeListener extends PGNListener {
   void enterFull_move_number_indication(
       Full_move_number_indicationContext ctx) {
     _checkMoveNumber(ctx, _fullMoveNumberIndicationRegExp);
+    _assertWithContextFeedback(
+        ctx, _board.turn == Color.WHITE, 'White move was expected');
     _log.finer('Full move number indicator: ${ctx.text}');
-    _log.finest('Setting color to ${Color.WHITE}');
-    _nextMoveColor = Color.WHITE;
   }
 
   @override
@@ -107,8 +106,6 @@ class _MoveTextParseTreeListener extends PGNListener {
       Black_move_number_indicationContext ctx) {
     _checkMoveNumber(ctx, _blackMoveNumberIndicationRegExp);
     _log.finer('Black move number indicator: ${ctx.text}');
-    _log.finest('Setting color to ${Color.BLACK}');
-    _nextMoveColor = Color.BLACK;
   }
 
   void _checkMoveNumber(ParserRuleContext ctx, RegExp pattern) {
@@ -123,9 +120,6 @@ class _MoveTextParseTreeListener extends PGNListener {
   void enterSan_move(San_moveContext ctx) {
     _log.finer('SAN move: ${ctx.text}');
     final san = ctx.text;
-
-    _assertWithContextFeedback(
-        ctx, _nextMoveColor == _board.turn, "${_board.turn} move was expected");
 
     final nextMoves = _board.generate_moves();
     final move = nextMoves.firstWhere((move) => _board.move_to_san(move) == san,
@@ -143,8 +137,6 @@ class _MoveTextParseTreeListener extends PGNListener {
     nodeStack.add(node);
     ++_variationLengthStack.last;
     _log.finest('Variation length: ${_variationLengthStack.last}');
-    _nextMoveColor = Chess.swap_color(_nextMoveColor!);
-    _log.finest('Setting color to $_nextMoveColor');
   }
 
   @override
@@ -170,7 +162,7 @@ class _MoveTextParseTreeListener extends PGNListener {
     // If the next player 'should be' white, but the variation starts with a
     // black move number indication, we have to pop the last move and redo it
     // after the variation. See the explanation of _poppedBeforeVariationStack.
-    if (_nextMoveColor != firstMoveColorInVariation!) {
+    if (_board.turn != firstMoveColorInVariation!) {
       _board.undo_move();
       var poppedNode = nodeStack.removeLast();
       _poppedBeforeVariationStack.add(poppedNode);
@@ -201,9 +193,6 @@ class _MoveTextParseTreeListener extends PGNListener {
           'No node left in the node stack => adding move ${node.move.san} to the first moves');
       firstMoves.add(node);
     }
-    // A full move or a black move is expected after the variation, which will
-    // set the _activeColor
-    _nextMoveColor = null;
     final poppedBeforeVariation = _poppedBeforeVariationStack.removeLast();
 
     if (poppedBeforeVariation != null) {
