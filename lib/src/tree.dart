@@ -1,4 +1,7 @@
 import 'package:chess/chess.dart';
+import 'package:logging/logging.dart';
+
+final _logger = Logger('tree');
 
 class AnnotatedMove extends Move {
   // Let's cache the SAN notation for better performance
@@ -42,6 +45,8 @@ class GameWithVariations {
       void Function(Chess board, AnnotatedMove lastMove,
               List<AnnotatedMove> nextMoves)
           callback) {
+    _logger.fine('Starting traverse()');
+
     final board = Chess();
 
     // A stack data structure used by the DFS algorithm.
@@ -55,18 +60,21 @@ class GameWithVariations {
     // why elements are added in reverse order.
     List<GameNode?> stack = [];
     void addToStack(List<GameNode> children) {
-      stack.addAll(children
+      final addToStack = children
           .expand((e) => [
                 e, // step deeper
                 null, // step back
               ])
           .toList()
-          .reversed);
+          .reversed;
+      _logger.finest('Adding to stack: $addToStack');
+      stack.addAll(addToStack);
     }
 
     addToStack(firstMoves);
     while (stack.isNotEmpty) {
       GameNode? node = stack.removeLast();
+      _logger.finest('Popping ${node?.move.san}');
       if (node == null) {
         board.undo_move();
       } else {
@@ -78,10 +86,12 @@ class GameWithVariations {
         );
         addToStack(node.children);
       }
+      _logger.finest('Move number: ${board.move_number}');
     }
 
     assert(board.move_number == 1,
         'We should arrive back to the start after performing the DFS');
+    _logger.fine('Leaving traverse()');
   }
 
   @override
@@ -124,4 +134,7 @@ class GameNode {
   final List<GameNode> children;
 
   GameNode(this.move, this.children);
+
+  @override
+  String toString() => 'GameNode(move: ${move.san})';
 }
