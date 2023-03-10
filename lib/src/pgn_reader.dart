@@ -182,16 +182,17 @@ class _MoveTextParseTreeListener extends PGNListener {
 
     // Do 'variationLength' times undo_move()
     _log.finest('Backtracking $variationLength time(s)');
+    GameNode? lastRemovedNode;
     // ignore: avoid_function_literals_in_foreach_calls
     Iterable.generate(variationLength).forEach((i) {
       _board.undo_move();
+      lastRemovedNode = nodeStack.removeLast();
     });
 
-    final node = nodeStack.removeLast();
     if (nodeStack.isEmpty) {
       _log.finest(
-          'No node left in the node stack => adding move ${node.move.san} to the first moves');
-      firstMoves.add(node);
+          'No node left in the node stack => adding move ${lastRemovedNode!.move.san} to the first moves');
+      firstMoves.add(lastRemovedNode!);
     }
     final poppedBeforeVariation = _poppedBeforeVariationStack.removeLast();
 
