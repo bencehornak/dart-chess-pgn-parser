@@ -70,4 +70,30 @@ void main() {
                     .having((token) => token.charPositionInLine,
                         "charPositionInLine", 0))));
   });
+  test('invalid-move-number.pgn fromString().parse() throws PgnReaderException',
+      () async {
+    String input =
+        await File('test/resources/pgn/invalid-move-number.pgn').readAsString();
+    final reader = PgnReader.fromString(input);
+
+    expect(
+        () => reader.parse(),
+        throwsA(isA<PgnReaderException>()
+            .having(
+                (error) => error.ctx.start,
+                'ctx.start',
+                isA<Token>()
+                    // start Token
+                    .having((token) => token.line, 'line', 9)
+                    .having((token) => token.charPositionInLine,
+                        'charPositionInLine', 9))
+            .having(
+                (error) => error.ctx.stop,
+                'ctx.stop',
+                isA<Token>()
+                    // stop Token
+                    .having((token) => token.line, "line", 9)
+                    .having((token) => token.charPositionInLine,
+                        "charPositionInLine", 10))));
+  });
 }

@@ -65,6 +65,8 @@ class PgnReaderException implements Exception {
 
 class _MoveTextParseTreeListener extends PGNListener {
   static final _log = Logger('_MoveTextParseTreeListener');
+  static final _fullMoveNumberIndicationRegExp = RegExp(r'^(\d+)\.$');
+  static final _blackMoveNumberIndicationRegExp = RegExp(r'^(\d+)\.\.\.$');
 
   final Chess _board = Chess();
   final List<GameNode> nodeStack = [];
@@ -94,6 +96,7 @@ class _MoveTextParseTreeListener extends PGNListener {
   @override
   void enterFull_move_number_indication(
       Full_move_number_indicationContext ctx) {
+    _checkMoveNumber(ctx, _fullMoveNumberIndicationRegExp);
     _log.finer('Full move number indicator: ${ctx.text}');
     _log.finest('Setting color to ${Color.WHITE}');
     _nextMoveColor = Color.WHITE;
@@ -102,9 +105,18 @@ class _MoveTextParseTreeListener extends PGNListener {
   @override
   void enterBlack_move_number_indication(
       Black_move_number_indicationContext ctx) {
+    _checkMoveNumber(ctx, _blackMoveNumberIndicationRegExp);
     _log.finer('Black move number indicator: ${ctx.text}');
     _log.finest('Setting color to ${Color.BLACK}');
     _nextMoveColor = Color.BLACK;
+  }
+
+  void _checkMoveNumber(ParserRuleContext ctx, RegExp pattern) {
+    final match = pattern.firstMatch(ctx.text);
+    var actualMoveNumber = int.parse(match!.group(1)!);
+    var expectedMoveNumber = _board.move_number;
+    _assertWithContextFeedback(ctx, actualMoveNumber == expectedMoveNumber,
+        'Invalid move number. Expected: $expectedMoveNumber. Got: $actualMoveNumber');
   }
 
   @override
