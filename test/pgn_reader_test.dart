@@ -9,12 +9,12 @@ import 'package:test/test.dart';
 void main() {
   final String expectedGameTree = '''
 [GameWithVariations(
-  1. d4
   1. e4
     1... e5
       2. Nc3
         2... Nf6
     1... e6
+  1. d4
 )]''';
 
   StreamSubscription<LogRecord>? loggerSubscription;
