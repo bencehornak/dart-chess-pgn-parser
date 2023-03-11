@@ -18,6 +18,9 @@ class AnnotatedMove extends Move {
   int get totalHalfMoveNumber =>
       (moveNumber - 1) * 2 + (color == Color.BLACK ? 1 : 0) + 1;
 
+  String get moveNumberIndicator =>
+      color == Color.WHITE ? '$moveNumber.' : '$moveNumber...';
+
   AnnotatedMove(
     super.color,
     super.from,
@@ -47,11 +50,10 @@ class AnnotatedMove extends Move {
   String toString() => toHumanReadable();
 
   String toHumanReadable({bool showBlackMoveNumberIndicator = true}) {
-    if (color == Color.WHITE) {
-      return '$moveNumber. $san';
-    } else {
-      return '${showBlackMoveNumberIndicator ? '$moveNumber... ' : ''}$san';
-    }
+    final showMoveNumberIndicator =
+        color == Color.WHITE || showBlackMoveNumberIndicator;
+
+    return '${showMoveNumberIndicator ? '$moveNumberIndicator ' : ''}$san';
   }
 }
 

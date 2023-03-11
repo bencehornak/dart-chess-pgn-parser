@@ -10,6 +10,14 @@ void main() {
         Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null, 1, 'e4');
     final firstBlackMove = AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
         Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 1, 'e5');
+    group('moveNumberIndicator', () {
+      test('First white move', () {
+        expect(firstWhiteMove.moveNumberIndicator, '1.');
+      });
+      test('First black move', () {
+        expect(firstBlackMove.moveNumberIndicator, '1...');
+      });
+    });
     group('totalHalfMoveNumber', () {
       test('First white move', () {
         expect(firstWhiteMove.totalHalfMoveNumber, 1);
