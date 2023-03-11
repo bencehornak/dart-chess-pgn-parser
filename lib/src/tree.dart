@@ -34,7 +34,15 @@ class AnnotatedMove extends Move {
         );
 
   @override
-  String toString() => san;
+  String toString() => toHumanReadable();
+
+  String toHumanReadable({bool showBlackMoveNumberIndicator = true}) {
+    if (color == Color.WHITE) {
+      return '$moveNumber. $san';
+    } else {
+      return '${showBlackMoveNumberIndicator ? '$moveNumber... ' : ''}$san';
+    }
+  }
 }
 
 class GameWithVariations {
@@ -91,17 +99,12 @@ class GameWithVariations {
 
   @override
   String toString() {
-    String formatMove(Color color, int moveNumber, String san) {
-      Color lastMoveColor = color == Color.WHITE ? Color.BLACK : Color.WHITE;
-      if (lastMoveColor == Color.BLACK) {
-        // The moveNumber is increased before black in the chess lib. It is
-        // probably a bug.
-        --moveNumber;
-      }
-      final dots = lastMoveColor == Color.WHITE ? '.' : '...';
+    String formatMove(AnnotatedMove move) {
+      Color lastMoveColor =
+          move.color == Color.WHITE ? Color.BLACK : Color.WHITE;
       final halfMoveNumber =
-          (moveNumber - 1) * 2 + (lastMoveColor == Color.BLACK ? 1 : 0);
-      return '${'  ' * (halfMoveNumber)}$moveNumber$dots $san';
+          (move.moveNumber - 1) * 2 + (lastMoveColor == Color.WHITE ? 1 : 0);
+      return '${'  ' * (halfMoveNumber)}${move.toHumanReadable()}';
     }
 
     final buffer = StringBuffer();
@@ -109,8 +112,7 @@ class GameWithVariations {
     traverse((board, node) {
       if (node.rootNode) return;
 
-      buffer.write(
-          '  ${formatMove(board.turn, board.move_number, node.move!.san)}\n');
+      buffer.write('  ${formatMove(node.move!)}\n');
     });
     buffer.write(')');
     return buffer.toString();

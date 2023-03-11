@@ -140,10 +140,11 @@ class _MoveTextParseTreeListener extends PGNListener {
     final move = nextMoves.firstWhere((move) => _board.move_to_san(move) == san,
         orElse: () => _failWithContextFeedback(ctx, 'Invalid move \'$san\''));
 
+    int moveNumber = _board.move_number;
     _board.move(move);
     _log.finest('Board (move=${_board.move_number}):\n${_board.ascii}');
 
-    final annotatedMove = AnnotatedMove.fromMove(move, _board.move_number, san);
+    final annotatedMove = AnnotatedMove.fromMove(move, moveNumber, san);
     final parent = nodeStack.last;
     final node = GameNode.withLateChildrenInit(annotatedMove, parent);
     parent.children.add(node);

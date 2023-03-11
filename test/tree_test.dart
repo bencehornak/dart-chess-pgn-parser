@@ -4,129 +4,152 @@ import 'package:test/test.dart';
 
 void main() {
   GameWithVariations game = _buildGame();
-  group('traverse()', () {
-    test('traverse() lastMove argument is correct', () {
-      List<String?> actualPath = [];
-      game.traverse((Chess board, GameNode node) {
-        actualPath.add(node.move?.san);
+
+  group('AnnotatedMove', () {
+    group('toHumanReadable', () {
+      test('White', () {
+        final move = AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'],
+            Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null, 1, 'e4');
+        expect(move.toHumanReadable(), '1. e4');
       });
-      List<String?> expectedDfsPath = [
-        null, // rootNode
-        'd4',
-        'e4',
-        'e5',
-        'Nc3',
-        'Nf6',
-        'e6'
-      ];
-      expect(actualPath, expectedDfsPath);
-    });
-    test('traverse() nextMoves argument is correct', () {
-      List<List<String?>> actualPath = [];
-      game.traverse((Chess board, GameNode node) {
-        actualPath.add(node.children.map((child) => child.move?.san).toList());
+      test('Black (showBlackMoveNumberIndicator: true)', () {
+        final move = AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
+            Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 1, 'e5');
+        expect(move.toHumanReadable(showBlackMoveNumberIndicator: true),
+            '1... e5');
       });
-      List<List<String>?> expectedDfsPath = [
-        ['d4', 'e4'], // rootNode
-        [], // d4
-        ['e5', 'e6'], // e4
-        ['Nc3'], // e5
-        ['Nf6'], // Nc3
-        [], // Nf6
-        [], // e6
-      ];
-      expect(actualPath, expectedDfsPath);
-    });
-    test('traverse() board argument is correct', () {
-      List<String> actualPath = [];
-      game.traverse((Chess board, GameNode node) {
-        actualPath.add(board.ascii);
+      test('Black (showBlackMoveNumberIndicator: false)', () {
+        final move = AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
+            Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 1, 'e5');
+        expect(move.toHumanReadable(showBlackMoveNumberIndicator: false), 'e5');
       });
-      List<String?> expectedDfsPath = [
-        '   +------------------------+\n'
-            ' 8 | r  n  b  q  k  b  n  r |\n'
-            ' 7 | p  p  p  p  p  p  p  p |\n'
-            ' 6 | .  .  .  .  .  .  .  . |\n'
-            ' 5 | .  .  .  .  .  .  .  . |\n'
-            ' 4 | .  .  .  .  .  .  .  . |\n'
-            ' 3 | .  .  .  .  .  .  .  . |\n'
-            ' 2 | P  P  P  P  P  P  P  P |\n'
-            ' 1 | R  N  B  Q  K  B  N  R |\n'
-            '   +------------------------+\n'
-            '     a  b  c  d  e  f  g  h\n',
-        '   +------------------------+\n'
-            ' 8 | r  n  b  q  k  b  n  r |\n'
-            ' 7 | p  p  p  p  p  p  p  p |\n'
-            ' 6 | .  .  .  .  .  .  .  . |\n'
-            ' 5 | .  .  .  .  .  .  .  . |\n'
-            ' 4 | .  .  .  P  .  .  .  . |\n'
-            ' 3 | .  .  .  .  .  .  .  . |\n'
-            ' 2 | P  P  P  .  P  P  P  P |\n'
-            ' 1 | R  N  B  Q  K  B  N  R |\n'
-            '   +------------------------+\n'
-            '     a  b  c  d  e  f  g  h\n',
-        '   +------------------------+\n'
-            ' 8 | r  n  b  q  k  b  n  r |\n'
-            ' 7 | p  p  p  p  p  p  p  p |\n'
-            ' 6 | .  .  .  .  .  .  .  . |\n'
-            ' 5 | .  .  .  .  .  .  .  . |\n'
-            ' 4 | .  .  .  .  P  .  .  . |\n'
-            ' 3 | .  .  .  .  .  .  .  . |\n'
-            ' 2 | P  P  P  P  .  P  P  P |\n'
-            ' 1 | R  N  B  Q  K  B  N  R |\n'
-            '   +------------------------+\n'
-            '     a  b  c  d  e  f  g  h\n',
-        '   +------------------------+\n'
-            ' 8 | r  n  b  q  k  b  n  r |\n'
-            ' 7 | p  p  p  p  .  p  p  p |\n'
-            ' 6 | .  .  .  .  .  .  .  . |\n'
-            ' 5 | .  .  .  .  p  .  .  . |\n'
-            ' 4 | .  .  .  .  P  .  .  . |\n'
-            ' 3 | .  .  .  .  .  .  .  . |\n'
-            ' 2 | P  P  P  P  .  P  P  P |\n'
-            ' 1 | R  N  B  Q  K  B  N  R |\n'
-            '   +------------------------+\n'
-            '     a  b  c  d  e  f  g  h\n',
-        '   +------------------------+\n'
-            ' 8 | r  n  b  q  k  b  n  r |\n'
-            ' 7 | p  p  p  p  .  p  p  p |\n'
-            ' 6 | .  .  .  .  .  .  .  . |\n'
-            ' 5 | .  .  .  .  p  .  .  . |\n'
-            ' 4 | .  .  .  .  P  .  .  . |\n'
-            ' 3 | .  .  N  .  .  .  .  . |\n'
-            ' 2 | P  P  P  P  .  P  P  P |\n'
-            ' 1 | R  .  B  Q  K  B  N  R |\n'
-            '   +------------------------+\n'
-            '     a  b  c  d  e  f  g  h\n',
-        '   +------------------------+\n'
-            ' 8 | r  n  b  q  k  b  .  r |\n'
-            ' 7 | p  p  p  p  .  p  p  p |\n'
-            ' 6 | .  .  .  .  .  n  .  . |\n'
-            ' 5 | .  .  .  .  p  .  .  . |\n'
-            ' 4 | .  .  .  .  P  .  .  . |\n'
-            ' 3 | .  .  N  .  .  .  .  . |\n'
-            ' 2 | P  P  P  P  .  P  P  P |\n'
-            ' 1 | R  .  B  Q  K  B  N  R |\n'
-            '   +------------------------+\n'
-            '     a  b  c  d  e  f  g  h\n',
-        '   +------------------------+\n'
-            ' 8 | r  n  b  q  k  b  n  r |\n'
-            ' 7 | p  p  p  p  .  p  p  p |\n'
-            ' 6 | .  .  .  .  p  .  .  . |\n'
-            ' 5 | .  .  .  .  .  .  .  . |\n'
-            ' 4 | .  .  .  .  P  .  .  . |\n'
-            ' 3 | .  .  .  .  .  .  .  . |\n'
-            ' 2 | P  P  P  P  .  P  P  P |\n'
-            ' 1 | R  N  B  Q  K  B  N  R |\n'
-            '   +------------------------+\n'
-            '     a  b  c  d  e  f  g  h\n',
-      ];
-      expect(actualPath, expectedDfsPath);
     });
   });
+  group('GameWithVariations', () {
+    group('traverse()', () {
+      test('traverse() lastMove argument is correct', () {
+        List<String?> actualPath = [];
+        game.traverse((Chess board, GameNode node) {
+          actualPath.add(node.move?.san);
+        });
+        List<String?> expectedDfsPath = [
+          null, // rootNode
+          'd4',
+          'e4',
+          'e5',
+          'Nc3',
+          'Nf6',
+          'e6'
+        ];
+        expect(actualPath, expectedDfsPath);
+      });
+      test('traverse() nextMoves argument is correct', () {
+        List<List<String?>> actualPath = [];
+        game.traverse((Chess board, GameNode node) {
+          actualPath
+              .add(node.children.map((child) => child.move?.san).toList());
+        });
+        List<List<String>?> expectedDfsPath = [
+          ['d4', 'e4'], // rootNode
+          [], // d4
+          ['e5', 'e6'], // e4
+          ['Nc3'], // e5
+          ['Nf6'], // Nc3
+          [], // Nf6
+          [], // e6
+        ];
+        expect(actualPath, expectedDfsPath);
+      });
+      test('traverse() board argument is correct', () {
+        List<String> actualPath = [];
+        game.traverse((Chess board, GameNode node) {
+          actualPath.add(board.ascii);
+        });
+        List<String?> expectedDfsPath = [
+          '   +------------------------+\n'
+              ' 8 | r  n  b  q  k  b  n  r |\n'
+              ' 7 | p  p  p  p  p  p  p  p |\n'
+              ' 6 | .  .  .  .  .  .  .  . |\n'
+              ' 5 | .  .  .  .  .  .  .  . |\n'
+              ' 4 | .  .  .  .  .  .  .  . |\n'
+              ' 3 | .  .  .  .  .  .  .  . |\n'
+              ' 2 | P  P  P  P  P  P  P  P |\n'
+              ' 1 | R  N  B  Q  K  B  N  R |\n'
+              '   +------------------------+\n'
+              '     a  b  c  d  e  f  g  h\n',
+          '   +------------------------+\n'
+              ' 8 | r  n  b  q  k  b  n  r |\n'
+              ' 7 | p  p  p  p  p  p  p  p |\n'
+              ' 6 | .  .  .  .  .  .  .  . |\n'
+              ' 5 | .  .  .  .  .  .  .  . |\n'
+              ' 4 | .  .  .  P  .  .  .  . |\n'
+              ' 3 | .  .  .  .  .  .  .  . |\n'
+              ' 2 | P  P  P  .  P  P  P  P |\n'
+              ' 1 | R  N  B  Q  K  B  N  R |\n'
+              '   +------------------------+\n'
+              '     a  b  c  d  e  f  g  h\n',
+          '   +------------------------+\n'
+              ' 8 | r  n  b  q  k  b  n  r |\n'
+              ' 7 | p  p  p  p  p  p  p  p |\n'
+              ' 6 | .  .  .  .  .  .  .  . |\n'
+              ' 5 | .  .  .  .  .  .  .  . |\n'
+              ' 4 | .  .  .  .  P  .  .  . |\n'
+              ' 3 | .  .  .  .  .  .  .  . |\n'
+              ' 2 | P  P  P  P  .  P  P  P |\n'
+              ' 1 | R  N  B  Q  K  B  N  R |\n'
+              '   +------------------------+\n'
+              '     a  b  c  d  e  f  g  h\n',
+          '   +------------------------+\n'
+              ' 8 | r  n  b  q  k  b  n  r |\n'
+              ' 7 | p  p  p  p  .  p  p  p |\n'
+              ' 6 | .  .  .  .  .  .  .  . |\n'
+              ' 5 | .  .  .  .  p  .  .  . |\n'
+              ' 4 | .  .  .  .  P  .  .  . |\n'
+              ' 3 | .  .  .  .  .  .  .  . |\n'
+              ' 2 | P  P  P  P  .  P  P  P |\n'
+              ' 1 | R  N  B  Q  K  B  N  R |\n'
+              '   +------------------------+\n'
+              '     a  b  c  d  e  f  g  h\n',
+          '   +------------------------+\n'
+              ' 8 | r  n  b  q  k  b  n  r |\n'
+              ' 7 | p  p  p  p  .  p  p  p |\n'
+              ' 6 | .  .  .  .  .  .  .  . |\n'
+              ' 5 | .  .  .  .  p  .  .  . |\n'
+              ' 4 | .  .  .  .  P  .  .  . |\n'
+              ' 3 | .  .  N  .  .  .  .  . |\n'
+              ' 2 | P  P  P  P  .  P  P  P |\n'
+              ' 1 | R  .  B  Q  K  B  N  R |\n'
+              '   +------------------------+\n'
+              '     a  b  c  d  e  f  g  h\n',
+          '   +------------------------+\n'
+              ' 8 | r  n  b  q  k  b  .  r |\n'
+              ' 7 | p  p  p  p  .  p  p  p |\n'
+              ' 6 | .  .  .  .  .  n  .  . |\n'
+              ' 5 | .  .  .  .  p  .  .  . |\n'
+              ' 4 | .  .  .  .  P  .  .  . |\n'
+              ' 3 | .  .  N  .  .  .  .  . |\n'
+              ' 2 | P  P  P  P  .  P  P  P |\n'
+              ' 1 | R  .  B  Q  K  B  N  R |\n'
+              '   +------------------------+\n'
+              '     a  b  c  d  e  f  g  h\n',
+          '   +------------------------+\n'
+              ' 8 | r  n  b  q  k  b  n  r |\n'
+              ' 7 | p  p  p  p  .  p  p  p |\n'
+              ' 6 | .  .  .  .  p  .  .  . |\n'
+              ' 5 | .  .  .  .  .  .  .  . |\n'
+              ' 4 | .  .  .  .  P  .  .  . |\n'
+              ' 3 | .  .  .  .  .  .  .  . |\n'
+              ' 2 | P  P  P  P  .  P  P  P |\n'
+              ' 1 | R  N  B  Q  K  B  N  R |\n'
+              '   +------------------------+\n'
+              '     a  b  c  d  e  f  g  h\n',
+        ];
+        expect(actualPath, expectedDfsPath);
+      });
+    });
 
-  test('toString()', () {
-    expect(game.toString(), '''
+    test('toString()', () {
+      expect(game.toString(), '''
 GameWithVariations(
   1. d4
   1. e4
@@ -135,29 +158,30 @@ GameWithVariations(
         2... Nf6
     1... e6
 )''');
-  });
-
-  group('operator==()', () {
-    test('true', () {
-      expect(game, _buildGame());
     });
 
-    test('false', () {
-      expect(game,
-          isNot(GameWithVariations(GameNode.rootNodeWithLateChildrenInit())));
-    });
-  });
+    group('operator==()', () {
+      test('true', () {
+        expect(game, _buildGame());
+      });
 
-  group('hashCode', () {
-    test('equals', () {
-      expect(game.hashCode, _buildGame().hashCode);
+      test('false', () {
+        expect(game,
+            isNot(GameWithVariations(GameNode.rootNodeWithLateChildrenInit())));
+      });
     });
 
-    test('does not equal', () {
-      expect(
-          game.hashCode,
-          isNot(GameWithVariations(GameNode.rootNodeWithLateChildrenInit())
-              .hashCode));
+    group('hashCode', () {
+      test('equals', () {
+        expect(game.hashCode, _buildGame().hashCode);
+      });
+
+      test('does not equal', () {
+        expect(
+            game.hashCode,
+            isNot(GameWithVariations(GameNode.rootNodeWithLateChildrenInit())
+                .hashCode));
+      });
     });
   });
 }
