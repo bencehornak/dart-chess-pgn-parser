@@ -8,6 +8,16 @@ class AnnotatedMove extends Move {
   final int moveNumber;
   final String san;
 
+  /// Returns the number of half moves in the game, including this one.
+  ///
+  /// Do not confuse it with [Chess.half_moves], which is a counter for the [50
+  /// move rule](https://en.wikipedia.org/wiki/Fifty-move_rule).
+  ///
+  /// For the first white move it is `1`, for the first black move it is `2` and
+  /// so on.
+  int get totalHalfMoveNumber =>
+      (moveNumber - 1) * 2 + (color == Color.BLACK ? 1 : 0) + 1;
+
   AnnotatedMove(
     super.color,
     super.from,
@@ -100,11 +110,7 @@ class GameWithVariations {
   @override
   String toString() {
     String formatMove(AnnotatedMove move) {
-      Color lastMoveColor =
-          move.color == Color.WHITE ? Color.BLACK : Color.WHITE;
-      final halfMoveNumber =
-          (move.moveNumber - 1) * 2 + (lastMoveColor == Color.WHITE ? 1 : 0);
-      return '${'  ' * (halfMoveNumber)}${move.toHumanReadable()}';
+      return '${'  ' * (move.totalHalfMoveNumber - 1)}${move.toHumanReadable()}';
     }
 
     final buffer = StringBuffer();

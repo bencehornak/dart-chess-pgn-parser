@@ -6,22 +6,31 @@ void main() {
   GameWithVariations game = _buildGame();
 
   group('AnnotatedMove', () {
+    final firstWhiteMove = AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'],
+        Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null, 1, 'e4');
+    final firstBlackMove = AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
+        Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 1, 'e5');
+    group('totalHalfMoveNumber', () {
+      test('First white move', () {
+        expect(firstWhiteMove.totalHalfMoveNumber, 1);
+      });
+      test('First black move', () {
+        expect(firstBlackMove.totalHalfMoveNumber, 2);
+      });
+    });
     group('toHumanReadable', () {
       test('White', () {
-        final move = AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'],
-            Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null, 1, 'e4');
-        expect(move.toHumanReadable(), '1. e4');
+        expect(firstWhiteMove.toHumanReadable(), '1. e4');
       });
       test('Black (showBlackMoveNumberIndicator: true)', () {
-        final move = AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
-            Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 1, 'e5');
-        expect(move.toHumanReadable(showBlackMoveNumberIndicator: true),
+        expect(
+            firstBlackMove.toHumanReadable(showBlackMoveNumberIndicator: true),
             '1... e5');
       });
       test('Black (showBlackMoveNumberIndicator: false)', () {
-        final move = AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
-            Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 1, 'e5');
-        expect(move.toHumanReadable(showBlackMoveNumberIndicator: false), 'e5');
+        expect(
+            firstBlackMove.toHumanReadable(showBlackMoveNumberIndicator: false),
+            'e5');
       });
     });
   });
