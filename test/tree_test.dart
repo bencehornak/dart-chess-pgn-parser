@@ -153,23 +153,23 @@ GameWithVariations _buildGame() {
       // Depth: 1st half move
       [
         // d4
-        GameNode(
+        GameNode.withLateParentInit(
             AnnotatedMove(Color.WHITE, Chess.SQUARES['d2'], Chess.SQUARES['d4'],
                 0, PieceType.PAWN, null, null, 'd4'),
             []),
         // e4
-        GameNode(
+        GameNode.withLateParentInit(
             AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'], Chess.SQUARES['e4'],
                 0, PieceType.PAWN, null, null, 'e4'),
             // Depth: 2nd half move
             [
               // e5
-              GameNode(
+              GameNode.withLateParentInit(
                   AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
                       Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 'e5'),
                   [
                     // Nc3
-                    GameNode(
+                    GameNode.withLateParentInit(
                         AnnotatedMove(
                             Color.WHITE,
                             Chess.SQUARES['b1'],
@@ -181,7 +181,7 @@ GameWithVariations _buildGame() {
                             'Nc3'),
                         [
                           // Nf6
-                          GameNode(
+                          GameNode.withLateParentInit(
                               AnnotatedMove(
                                   Color.BLACK,
                                   Chess.SQUARES['g8'],
@@ -195,10 +195,11 @@ GameWithVariations _buildGame() {
                         ]),
                   ]),
               // e6
-              GameNode(
+              GameNode.withLateParentInit(
                   AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
                       Chess.SQUARES['e6'], 0, PieceType.PAWN, null, null, 'e6'),
                   [])
             ])
-      ]);
+      ])
+    ..fixParentsRecursively();
 }

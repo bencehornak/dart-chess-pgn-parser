@@ -119,6 +119,19 @@ class GameWithVariations {
     return buffer.toString();
   }
 
+  void fixParentsRecursively() {
+    final List<GameNode> stack = [];
+    stack.addAll(firstMoves);
+
+    while (stack.isNotEmpty) {
+      final node = stack.removeLast();
+      node.children.forEach((child) {
+        child._parent = node;
+        stack.add(child);
+      });
+    }
+  }
+
   @override
   bool operator ==(Object other) {
     if (other is! GameWithVariations) return false;
@@ -132,8 +145,25 @@ class GameWithVariations {
 class GameNode {
   final AnnotatedMove move;
   final List<GameNode> children;
+  GameNode? get parent => _parent;
+  GameNode? _parent;
 
-  GameNode(this.move, this.children);
+  /// Constructor, which sets [parent] right away, but delays the initialization
+  /// of [children].
+  ///
+  /// To handle the circular dependency between parents and their children, add
+  /// the children later to the [children] list.
+  GameNode.withLateChildrenInit(this.move, GameNode? parent)
+      : _parent = parent,
+        children = [];
+
+  /// Constructor, which sets [children] right away, but delays the
+  /// initialization of [parent].
+  ///
+  /// You can set [parent] later by calling
+  /// [GameWithVariations.fixParentsRecursively] on the corresponding
+  /// [GameWithVariations] object.
+  GameNode.withLateParentInit(this.move, this.children) : _parent = null;
 
   @override
   String toString() => 'GameNode(move: ${move.san})';

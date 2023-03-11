@@ -129,11 +129,10 @@ class _MoveTextParseTreeListener extends PGNListener {
     _log.finest('Board (move=${_board.move_number}):\n${_board.ascii}');
 
     final annotatedMove = AnnotatedMove.fromMove(move, san);
-    final node = GameNode(annotatedMove, []);
-    if (nodeStack.isNotEmpty) {
-      final parent = nodeStack.last;
-      parent.children.add(node);
-    }
+    final parent = nodeStack.isNotEmpty ? nodeStack.last : null;
+    final node = GameNode.withLateChildrenInit(annotatedMove, parent);
+    parent?.children.add(node);
+
     nodeStack.add(node);
     ++_variationLengthStack.last;
     _log.finest('Variation length: ${_variationLengthStack.last}');
