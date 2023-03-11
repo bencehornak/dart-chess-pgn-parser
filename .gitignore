@@ -7,3 +7,6 @@
 pubspec.lock
 
 antlr4/.antlr
+
+build
+*.log
