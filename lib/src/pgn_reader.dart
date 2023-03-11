@@ -41,12 +41,12 @@ class PgnReader {
     return GameWithVariations(firstMoves);
   }
 
-  List<GameNode> _parseGameMoveTextSectionContext(Pgn_gameContext gameContext) {
+  GameNode _parseGameMoveTextSectionContext(Pgn_gameContext gameContext) {
     final movetextSection = gameContext.movetext_section();
     final listener = _MoveTextParseTreeListener();
     ParseTreeWalker.DEFAULT.walk(listener, movetextSection!);
 
-    return listener.firstMoves;
+    return listener.rootNode;
   }
 }
 
@@ -90,7 +90,24 @@ class _MoveTextParseTreeListener extends PGNListener {
   /// popped before we went into the variation.
   final List<GameNode?> _poppedBeforeVariationStack = [];
 
-  final List<GameNode> firstMoves = [];
+  final GameNode rootNode = GameNode.rootNodeWithLateChildrenInit();
+
+  @override
+  void enterMovetext_section(Movetext_sectionContext ctx) {
+    _log.finer('Entering move text section context');
+    _log.finest('Adding rootNode to the nodeStack');
+
+    nodeStack.add(rootNode);
+  }
+
+  @override
+  void exitMovetext_section(Movetext_sectionContext ctx) {
+    _log.finer('Exiting move text section context');
+    _log.finest('Adding move ${nodeStack.first.move?.san} to the first moves');
+
+    rootNode.children.add(nodeStack.first);
+    nodeStack.clear();
+  }
 
   @override
   void enterFull_move_number_indication(
@@ -129,9 +146,9 @@ class _MoveTextParseTreeListener extends PGNListener {
     _log.finest('Board (move=${_board.move_number}):\n${_board.ascii}');
 
     final annotatedMove = AnnotatedMove.fromMove(move, san);
-    final parent = nodeStack.isNotEmpty ? nodeStack.last : null;
+    final parent = nodeStack.last;
     final node = GameNode.withLateChildrenInit(annotatedMove, parent);
-    parent?.children.add(node);
+    parent.children.add(node);
 
     nodeStack.add(node);
     ++_variationLengthStack.last;
@@ -166,7 +183,7 @@ class _MoveTextParseTreeListener extends PGNListener {
       var poppedNode = nodeStack.removeLast();
       _poppedBeforeVariationStack.add(poppedNode);
       _log.finest(
-          'First move color in variation does not match next move color => popped move ${poppedNode.move.san}');
+          'First move color in variation does not match next move color => popped move ${poppedNode.move?.san}');
     } else {
       _poppedBeforeVariationStack.add(null);
       _log.finest(
@@ -181,18 +198,11 @@ class _MoveTextParseTreeListener extends PGNListener {
 
     // Do 'variationLength' times undo_move()
     _log.finest('Backtracking $variationLength time(s)');
-    GameNode? lastRemovedNode;
-    // ignore: avoid_function_literals_in_foreach_calls
     Iterable.generate(variationLength).forEach((i) {
       _board.undo_move();
-      lastRemovedNode = nodeStack.removeLast();
+      nodeStack.removeLast();
     });
 
-    if (nodeStack.isEmpty) {
-      _log.finest(
-          'No node left in the node stack => adding move ${lastRemovedNode!.move.san} to the first moves');
-      firstMoves.add(lastRemovedNode!);
-    }
     final poppedBeforeVariation = _poppedBeforeVariationStack.removeLast();
 
     if (poppedBeforeVariation != null) {
@@ -204,15 +214,6 @@ class _MoveTextParseTreeListener extends PGNListener {
       _log.finest(
           'No node was popped before the variation, board already up-to-date (move=${_board.move_number}):\n${_board.ascii}');
     }
-  }
-
-  @override
-  void exitMovetext_section(Movetext_sectionContext ctx) {
-    _log.finer('Exiting move text section context');
-    _log.finest('Adding move ${nodeStack.first.move.san} to the first moves');
-
-    firstMoves.add(nodeStack.first);
-    nodeStack.clear();
   }
 
   @override

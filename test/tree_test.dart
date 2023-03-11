@@ -6,25 +6,17 @@ void main() {
   GameWithVariations game = _buildGame();
   group('traverse()', () {
     test('traverse() lastMove argument is correct', () {
-      // This object is only used to accessed the move_to_san method (which should be static IMO)
-      final chess = Chess();
-
-      List<String> actualPath = [];
+      List<String?> actualPath = [];
       game.traverse((Chess board, GameNode node) {
-        actualPath.add(chess.move_to_san(node.move));
+        actualPath.add(node.move?.san);
       });
       List<String> expectedDfsPath = ['d4', 'e4', 'e5', 'Nc3', 'Nf6', 'e6'];
       expect(actualPath, expectedDfsPath);
     });
     test('traverse() nextMoves argument is correct', () {
-      // This object is only used to accessed the move_to_san method (which should be static IMO)
-      final chess = Chess();
-
-      List<List<String>> actualPath = [];
+      List<List<String?>> actualPath = [];
       game.traverse((Chess board, GameNode node) {
-        actualPath.add(node.children
-            .map((child) => chess.move_to_san(child.move))
-            .toList());
+        actualPath.add(node.children.map((child) => child.move?.san).toList());
       });
       List<List<String>> expectedDfsPath = [
         [], // d4
@@ -131,7 +123,8 @@ GameWithVariations(
     });
 
     test('false', () {
-      expect(game, isNot(GameWithVariations([])));
+      expect(game,
+          isNot(GameWithVariations(GameNode.rootNodeWithLateChildrenInit())));
     });
   });
 
@@ -141,13 +134,16 @@ GameWithVariations(
     });
 
     test('does not equal', () {
-      expect(game.hashCode, isNot(GameWithVariations([]).hashCode));
+      expect(
+          game.hashCode,
+          isNot(GameWithVariations(GameNode.rootNodeWithLateChildrenInit())
+              .hashCode));
     });
   });
 }
 
 GameWithVariations _buildGame() {
-  return GameWithVariations(
+  return GameWithVariations(GameNode.rootNodeWithLateParentInit(
       // Depth: 1st half move
       [
         // d4
@@ -198,6 +194,6 @@ GameWithVariations _buildGame() {
                       Chess.SQUARES['e6'], 0, PieceType.PAWN, null, null, 'e6'),
                   [])
             ])
-      ])
+      ]))
     ..fixParentsRecursively();
 }

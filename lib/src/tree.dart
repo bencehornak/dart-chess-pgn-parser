@@ -35,10 +35,9 @@ class AnnotatedMove extends Move {
 }
 
 class GameWithVariations {
-  final List<GameNode> firstMoves;
+  final GameNode rootNode;
 
-  GameWithVariations(List<GameNode> firstMoves)
-      : firstMoves = List.unmodifiable(firstMoves);
+  GameWithVariations(this.rootNode);
 
   /// Traverse the tree in DFS order.
   void traverse(void Function(Chess board, GameNode node) callback) {
@@ -68,10 +67,10 @@ class GameWithVariations {
       stack.addAll(addToStack);
     }
 
-    addToStack(firstMoves);
+    addToStack([rootNode]);
     while (stack.isNotEmpty) {
       GameNode? node = stack.removeLast();
-      _logger.finest('Popping ${node?.move.san}');
+      _logger.finest('Popping ${node?.move}');
       if (node == null) {
         board.undo_move();
       } else {
@@ -105,16 +104,20 @@ class GameWithVariations {
     final buffer = StringBuffer();
     buffer.write('GameWithVariations(\n');
     traverse((board, node) {
+      if (node.rootNode) return;
+
       buffer.write(
-          '  ${formatMove(board.turn, board.move_number, node.move.san)}\n');
+          '  ${formatMove(board.turn, board.move_number, node.move!.san)}\n');
     });
     buffer.write(')');
     return buffer.toString();
   }
 
+  /// Fixes the [GameNode] objects, which were constructed with
+  /// [GameNode.rootNodeWithLateParentInit] or [GameNode.withLateParentInit]
   void fixParentsRecursively() {
     final List<GameNode> stack = [];
-    stack.addAll(firstMoves);
+    stack.addAll([rootNode]);
 
     while (stack.isNotEmpty) {
       final node = stack.removeLast();
@@ -136,28 +139,62 @@ class GameWithVariations {
 }
 
 class GameNode {
-  final AnnotatedMove move;
+  /// The corresponding [AnnotatedMove].
+  ///
+  /// Initialized for all [GameNode], except for the root node (see
+  /// [rootNode]).
+  final AnnotatedMove? move;
   final List<GameNode> children;
   GameNode? get parent => _parent;
   GameNode? _parent;
 
+  bool get rootNode => _parent == null;
+
+  /// Constructor for the root node, which delays the initialization of
+  /// [children].
+  ///
+  /// {@template game_node_late_children_init}
+  /// To handle the circular dependency between parents and their children, add
+  /// the children later to the [children] list.
+  /// {@endtemplate}
+  GameNode.rootNodeWithLateChildrenInit()
+      : _parent = null,
+        children = [],
+        move = null;
+
   /// Constructor, which sets [parent] right away, but delays the initialization
   /// of [children].
   ///
-  /// To handle the circular dependency between parents and their children, add
-  /// the children later to the [children] list.
-  GameNode.withLateChildrenInit(this.move, GameNode? parent)
-      : _parent = parent,
+  /// {@macro game_node_late_children_init}
+  GameNode.withLateChildrenInit(AnnotatedMove move, GameNode parent)
+      :
+        // ignore: prefer_initializing_formals
+        move = move,
+        _parent = parent,
         children = [];
 
   /// Constructor, which sets [children] right away, but delays the
   /// initialization of [parent].
   ///
+  /// {@template game_node_late_parent_init}
   /// You can set [parent] later by calling
   /// [GameWithVariations.fixParentsRecursively] on the corresponding
   /// [GameWithVariations] object.
-  GameNode.withLateParentInit(this.move, this.children) : _parent = null;
+  /// {@endtemplate}
+  GameNode.rootNodeWithLateParentInit(this.children)
+      : move = null,
+        _parent = null;
+
+  /// Constructor, which sets [children] right away, but delays the
+  /// initialization of [parent].
+  ///
+  /// {@macro game_node_late_parent_init}
+  GameNode.withLateParentInit(AnnotatedMove move, this.children)
+      :
+        // ignore: prefer_initializing_formals
+        move = move,
+        _parent = null;
 
   @override
-  String toString() => 'GameNode(move: ${move.san})';
+  String toString() => 'GameNode(move: ${move?.san})';
 }
