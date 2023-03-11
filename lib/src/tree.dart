@@ -41,10 +41,7 @@ class GameWithVariations {
       : firstMoves = List.unmodifiable(firstMoves);
 
   /// Traverse the tree in DFS order.
-  void traverse(
-      void Function(Chess board, AnnotatedMove lastMove,
-              List<AnnotatedMove> nextMoves)
-          callback) {
+  void traverse(void Function(Chess board, GameNode node) callback) {
     _logger.fine('Starting traverse()');
 
     final board = Chess();
@@ -79,11 +76,7 @@ class GameWithVariations {
         board.undo_move();
       } else {
         board.move(node.move);
-        callback(
-          board,
-          node.move,
-          node.children.map((child) => child.move).toList(),
-        );
+        callback(board, node);
         addToStack(node.children);
       }
       _logger.finest('Move number: ${board.move_number}');
@@ -111,9 +104,9 @@ class GameWithVariations {
 
     final buffer = StringBuffer();
     buffer.write('GameWithVariations(\n');
-    traverse((board, lastMove, nextMoves) {
+    traverse((board, node) {
       buffer.write(
-          '  ${formatMove(board.turn, board.move_number, lastMove.san)}\n');
+          '  ${formatMove(board.turn, board.move_number, node.move.san)}\n');
     });
     buffer.write(')');
     return buffer.toString();

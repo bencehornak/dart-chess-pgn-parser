@@ -10,9 +10,8 @@ void main() {
       final chess = Chess();
 
       List<String> actualPath = [];
-      game.traverse(
-          (Chess board, AnnotatedMove lastMove, List<AnnotatedMove> nextMoves) {
-        actualPath.add(chess.move_to_san(lastMove));
+      game.traverse((Chess board, GameNode node) {
+        actualPath.add(chess.move_to_san(node.move));
       });
       List<String> expectedDfsPath = ['d4', 'e4', 'e5', 'Nc3', 'Nf6', 'e6'];
       expect(actualPath, expectedDfsPath);
@@ -22,10 +21,10 @@ void main() {
       final chess = Chess();
 
       List<List<String>> actualPath = [];
-      game.traverse(
-          (Chess board, AnnotatedMove lastMove, List<AnnotatedMove> nextMoves) {
-        actualPath
-            .add(nextMoves.map((move) => chess.move_to_san(move)).toList());
+      game.traverse((Chess board, GameNode node) {
+        actualPath.add(node.children
+            .map((child) => chess.move_to_san(child.move))
+            .toList());
       });
       List<List<String>> expectedDfsPath = [
         [], // d4
@@ -39,8 +38,7 @@ void main() {
     });
     test('traverse() board argument is correct', () {
       List<String> actualPath = [];
-      game.traverse(
-          (Chess board, AnnotatedMove lastMove, List<AnnotatedMove> nextMoves) {
+      game.traverse((Chess board, GameNode node) {
         actualPath.add(board.ascii);
       });
       List<String> expectedDfsPath = [
