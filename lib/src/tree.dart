@@ -4,8 +4,9 @@ import 'package:logging/logging.dart';
 final _logger = Logger('tree');
 
 class AnnotatedMove extends Move {
-  // Let's cache the SAN notation for better performance
-  String san;
+  // Let's cache the moveNumber and the SAN notation for better performance
+  final int moveNumber;
+  final String san;
 
   AnnotatedMove(
     super.color,
@@ -15,10 +16,11 @@ class AnnotatedMove extends Move {
     super.piece,
     super.captured,
     super.promotion,
+    this.moveNumber,
     this.san,
   );
 
-  AnnotatedMove.fromMove(Move move, String san)
+  AnnotatedMove.fromMove(Move move, int moveNumber, String san)
       : this(
           move.color,
           move.from,
@@ -27,6 +29,7 @@ class AnnotatedMove extends Move {
           move.piece,
           move.captured,
           move.promotion,
+          moveNumber,
           san,
         );
 

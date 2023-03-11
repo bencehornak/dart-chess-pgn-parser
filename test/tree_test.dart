@@ -169,18 +169,26 @@ GameWithVariations _buildGame() {
         // d4
         GameNode.withLateParentInit(
             AnnotatedMove(Color.WHITE, Chess.SQUARES['d2'], Chess.SQUARES['d4'],
-                0, PieceType.PAWN, null, null, 'd4'),
+                0, PieceType.PAWN, null, null, 1, 'd4'),
             []),
         // e4
         GameNode.withLateParentInit(
             AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'], Chess.SQUARES['e4'],
-                0, PieceType.PAWN, null, null, 'e4'),
+                0, PieceType.PAWN, null, null, 1, 'e4'),
             // Depth: 2nd half move
             [
               // e5
               GameNode.withLateParentInit(
-                  AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
-                      Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 'e5'),
+                  AnnotatedMove(
+                      Color.BLACK,
+                      Chess.SQUARES['e7'],
+                      Chess.SQUARES['e5'],
+                      0,
+                      PieceType.PAWN,
+                      null,
+                      null,
+                      1,
+                      'e5'),
                   [
                     // Nc3
                     GameNode.withLateParentInit(
@@ -192,6 +200,7 @@ GameWithVariations _buildGame() {
                             PieceType.KNIGHT,
                             null,
                             null,
+                            2,
                             'Nc3'),
                         [
                           // Nf6
@@ -204,14 +213,23 @@ GameWithVariations _buildGame() {
                                   PieceType.KNIGHT,
                                   null,
                                   null,
+                                  2,
                                   'Nf6'),
                               []),
                         ]),
                   ]),
               // e6
               GameNode.withLateParentInit(
-                  AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
-                      Chess.SQUARES['e6'], 0, PieceType.PAWN, null, null, 'e6'),
+                  AnnotatedMove(
+                      Color.BLACK,
+                      Chess.SQUARES['e7'],
+                      Chess.SQUARES['e6'],
+                      0,
+                      PieceType.PAWN,
+                      null,
+                      null,
+                      1,
+                      'e6'),
                   [])
             ])
       ]))
