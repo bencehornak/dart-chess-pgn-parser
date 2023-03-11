@@ -104,8 +104,6 @@ class _MoveTextParseTreeListener extends PGNListener {
   void exitMovetext_section(Movetext_sectionContext ctx) {
     _log.finer('Exiting move text section context');
     _log.finest('Adding move ${nodeStack.first.move?.san} to the first moves');
-
-    rootNode.children.add(nodeStack.first);
     nodeStack.clear();
   }
 
