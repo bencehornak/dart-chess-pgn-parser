@@ -43,6 +43,27 @@ void main() {
     test('fromString().parse() returns the tree', () async {
       expect(tree.toString(), expectedGameTree);
     });
+    test('variationDepth of root is 0', () {
+      expect(tree[0].rootNode.variationDepth, 0);
+    });
+    test('variationDepth of e4 is 0', () {
+      expect(
+          tree[0]
+              .rootNode
+              .children
+              .firstWhere((element) => element.move!.san == 'e4')
+              .variationDepth,
+          0);
+    });
+    test('variationDepth of d4 is 1', () {
+      expect(
+          tree[0]
+              .rootNode
+              .children
+              .firstWhere((element) => element.move!.san == 'd4')
+              .variationDepth,
+          1);
+    });
   });
   test('advanced.pgn - fromString().parse() returns the tree', () async {
     String input = await File('test/resources/pgn/advanced.pgn').readAsString();
