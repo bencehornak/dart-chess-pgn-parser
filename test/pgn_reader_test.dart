@@ -30,13 +30,19 @@ void main() {
     loggerSubscription!.cancel();
   });
 
-  test('simple.pgn - fromString().parse() returns the tree', () async {
-    String input = await File('test/resources/pgn/simple.pgn').readAsString();
-    final reader = PgnReader.fromString(input);
+  group('simple.pgn', () {
+    late List<GameWithVariations> tree;
 
-    final tree = reader.parse();
+    setUpAll(() async {
+      String input = await File('test/resources/pgn/simple.pgn').readAsString();
+      final reader = PgnReader.fromString(input);
 
-    expect(tree.toString(), expectedGameTree);
+      tree = reader.parse();
+    });
+
+    test('fromString().parse() returns the tree', () async {
+      expect(tree.toString(), expectedGameTree);
+    });
   });
   test('advanced.pgn - fromString().parse() returns the tree', () async {
     String input = await File('test/resources/pgn/advanced.pgn').readAsString();
