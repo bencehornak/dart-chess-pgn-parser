@@ -90,6 +90,11 @@ class _MoveTextParseTreeListener extends PGNListener {
   /// popped before we went into the variation.
   final List<GameNode?> _poppedBeforeVariationStack = [];
 
+  /// Variation depth.
+  ///
+  /// {@macro variation_depth}
+  int _variationDepth = 0;
+
   final GameNode rootNode = GameNode.rootNodeWithLateChildrenInit();
 
   @override
@@ -146,7 +151,8 @@ class _MoveTextParseTreeListener extends PGNListener {
 
     final annotatedMove = AnnotatedMove.fromMove(move, moveNumber, san);
     final parent = nodeStack.last;
-    final node = GameNode.withLateChildrenInit(annotatedMove, parent);
+    final node = GameNode.withLateChildrenInit(
+        move: annotatedMove, parent: parent, variationDepth: _variationDepth);
     parent.children.add(node);
 
     nodeStack.add(node);
@@ -157,6 +163,7 @@ class _MoveTextParseTreeListener extends PGNListener {
   @override
   void enterRecursive_variation(Recursive_variationContext ctx) {
     _log.finer('Entering recursive variation: ${ctx.text}');
+    ++_variationDepth;
     _variationLengthStack.add(0);
 
     Color? firstMoveColorInVariation;
@@ -193,6 +200,7 @@ class _MoveTextParseTreeListener extends PGNListener {
   @override
   void exitRecursive_variation(Recursive_variationContext ctx) {
     _log.finer('Exiting recursive variation: ${ctx.text}');
+    --_variationDepth;
     final variationLength = _variationLengthStack.removeLast();
 
     // Do 'variationLength' times undo_move()

@@ -157,6 +157,14 @@ class GameNode {
   /// Initialized for all [GameNode], except for the root node (see
   /// [rootNode]).
   final AnnotatedMove? move;
+
+  /// Variation depth.
+  ///
+  /// {@template variation_depth}
+  /// The value 0 represents the main-line, 1 means a side-line, 2 means a
+  /// side-line of a side-line and so on.
+  /// {@endtemplate}
+  final int variationDepth;
   final List<GameNode> children;
   GameNode? get parent => _parent;
   GameNode? _parent;
@@ -173,13 +181,17 @@ class GameNode {
   GameNode.rootNodeWithLateChildrenInit()
       : _parent = null,
         children = [],
-        move = null;
+        move = null,
+        variationDepth = 0;
 
   /// Constructor, which sets [parent] right away, but delays the initialization
   /// of [children].
   ///
   /// {@macro game_node_late_children_init}
-  GameNode.withLateChildrenInit(AnnotatedMove move, GameNode parent)
+  GameNode.withLateChildrenInit(
+      {required AnnotatedMove move,
+      required GameNode parent,
+      required this.variationDepth})
       :
         // ignore: prefer_initializing_formals
         move = move,
@@ -194,15 +206,19 @@ class GameNode {
   /// [GameWithVariations.fixParentsRecursively] on the corresponding
   /// [GameWithVariations] object.
   /// {@endtemplate}
-  GameNode.rootNodeWithLateParentInit(this.children)
+  GameNode.rootNodeWithLateParentInit({required this.children})
       : move = null,
-        _parent = null;
+        _parent = null,
+        variationDepth = 0;
 
   /// Constructor, which sets [children] right away, but delays the
   /// initialization of [parent].
   ///
   /// {@macro game_node_late_parent_init}
-  GameNode.withLateParentInit(AnnotatedMove move, this.children)
+  GameNode.withLateParentInit(
+      {required AnnotatedMove move,
+      required this.children,
+      required this.variationDepth})
       :
         // ignore: prefer_initializing_formals
         move = move,
