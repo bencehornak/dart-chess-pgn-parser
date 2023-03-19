@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 import 'test_data.dart' as test_data;
 
 void main() {
-  GameWithVariations game = test_data.buildGameWithVariations();
+  ChessHalfMoveTree game = test_data.buildChessHalfMoveTree();
 
   group('AnnotatedMove', () {
     final firstWhiteMove = AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'],
@@ -44,11 +44,11 @@ void main() {
       });
     });
   });
-  group('GameWithVariations', () {
+  group('ChessHalfMoveTree', () {
     group('traverse()', () {
       test('traverse() lastMove argument is correct', () {
         List<String?> actualPath = [];
-        game.traverse((Chess board, GameNode node) {
+        game.traverse((Chess board, ChessHalfMoveTreeNode node) {
           actualPath.add(node.move?.san);
         });
         List<String?> expectedDfsPath = [
@@ -64,7 +64,7 @@ void main() {
       });
       test('traverse() nextMoves argument is correct', () {
         List<List<String?>> actualPath = [];
-        game.traverse((Chess board, GameNode node) {
+        game.traverse((Chess board, ChessHalfMoveTreeNode node) {
           actualPath
               .add(node.children.map((child) => child.move?.san).toList());
         });
@@ -81,7 +81,7 @@ void main() {
       });
       test('traverse() board argument is correct', () {
         List<String> actualPath = [];
-        game.traverse((Chess board, GameNode node) {
+        game.traverse((Chess board, ChessHalfMoveTreeNode node) {
           actualPath.add(board.ascii);
         });
         List<String?> expectedDfsPath = [
@@ -169,7 +169,7 @@ void main() {
 
     test('toString()', () {
       expect(game.toString(), '''
-GameWithVariations(
+ChessHalfMoveTree(
   1. d4
   1. e4
     1... e5
@@ -181,24 +181,27 @@ GameWithVariations(
 
     group('operator==()', () {
       test('true', () {
-        expect(game, test_data.buildGameWithVariations());
+        expect(game, test_data.buildChessHalfMoveTree());
       });
 
       test('false', () {
-        expect(game,
-            isNot(GameWithVariations(GameNode.rootNodeWithLateChildrenInit())));
+        expect(
+            game,
+            isNot(ChessHalfMoveTree(
+                ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit())));
       });
     });
 
     group('hashCode', () {
       test('equals', () {
-        expect(game.hashCode, test_data.buildGameWithVariations().hashCode);
+        expect(game.hashCode, test_data.buildChessHalfMoveTree().hashCode);
       });
 
       test('does not equal', () {
         expect(
             game.hashCode,
-            isNot(GameWithVariations(GameNode.rootNodeWithLateChildrenInit())
+            isNot(ChessHalfMoveTree(
+                    ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit())
                 .hashCode));
       });
     });

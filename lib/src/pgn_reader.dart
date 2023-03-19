@@ -14,7 +14,7 @@ class PgnReader {
 
   PgnReader.fromString(String input) : _input = InputStream.fromString(input);
 
-  List<GameWithVariations> parse() {
+  List<ChessHalfMoveTree> parse() {
     final databaseContext = _parseToAntlrTree();
     return _parseDatabaseContext(databaseContext);
   }
@@ -28,7 +28,7 @@ class PgnReader {
     return parser.pgn_database();
   }
 
-  List<GameWithVariations> _parseDatabaseContext(
+  List<ChessHalfMoveTree> _parseDatabaseContext(
       Pgn_databaseContext databaseContext) {
     return databaseContext
         .pgn_games()
@@ -36,12 +36,13 @@ class PgnReader {
         .toList();
   }
 
-  GameWithVariations _parseGameContext(Pgn_gameContext gameContext) {
+  ChessHalfMoveTree _parseGameContext(Pgn_gameContext gameContext) {
     final firstMoves = _parseGameMoveTextSectionContext(gameContext);
-    return GameWithVariations(firstMoves);
+    return ChessHalfMoveTree(firstMoves);
   }
 
-  GameNode _parseGameMoveTextSectionContext(Pgn_gameContext gameContext) {
+  ChessHalfMoveTreeNode _parseGameMoveTextSectionContext(
+      Pgn_gameContext gameContext) {
     final movetextSection = gameContext.movetext_section();
     final listener = _MoveTextParseTreeListener();
     ParseTreeWalker.DEFAULT.walk(listener, movetextSection!);
@@ -69,7 +70,7 @@ class _MoveTextParseTreeListener extends PGNListener {
   static final _blackMoveNumberIndicationRegExp = RegExp(r'^(\d+)\.\.\.$');
 
   final Chess _board = Chess();
-  final List<GameNode> nodeStack = [];
+  final List<ChessHalfMoveTreeNode> nodeStack = [];
   final List<int> _variationLengthStack = [
     0 // main line
   ];
@@ -88,14 +89,15 @@ class _MoveTextParseTreeListener extends PGNListener {
   ///
   /// If `null` is pushed to the end of the stack, it means that no node was
   /// popped before we went into the variation.
-  final List<GameNode?> _poppedBeforeVariationStack = [];
+  final List<ChessHalfMoveTreeNode?> _poppedBeforeVariationStack = [];
 
   /// Variation depth.
   ///
   /// {@macro variation_depth}
   int _variationDepth = 0;
 
-  final GameNode rootNode = GameNode.rootNodeWithLateChildrenInit();
+  final ChessHalfMoveTreeNode rootNode =
+      ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit();
 
   @override
   void enterMovetext_section(Movetext_sectionContext ctx) {
@@ -151,7 +153,7 @@ class _MoveTextParseTreeListener extends PGNListener {
 
     final annotatedMove = AnnotatedMove.fromMove(move, moveNumber, san);
     final parent = nodeStack.last;
-    final node = GameNode.withLateChildrenInit(
+    final node = ChessHalfMoveTreeNode.withLateChildrenInit(
         move: annotatedMove, parent: parent, variationDepth: _variationDepth);
     parent.children.add(node);
 

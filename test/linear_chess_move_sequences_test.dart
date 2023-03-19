@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'test_data.dart' as test_data;
 
 void main() {
-  final game = test_data.buildGameWithVariations();
+  final game = test_data.buildChessHalfMoveTree();
   final expectedLinearChessMoveSequences = LinearChessMoveSequences(
     [
       // 1. d4

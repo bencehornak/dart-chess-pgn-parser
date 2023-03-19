@@ -3,15 +3,16 @@ import 'package:logging/logging.dart';
 
 import 'annotated_move.dart';
 
-final _logger = Logger('tree');
+final _logger = Logger('ChessHalfMoveTree');
 
-class GameWithVariations {
-  final GameNode rootNode;
+class ChessHalfMoveTree {
+  final ChessHalfMoveTreeNode rootNode;
 
-  GameWithVariations(this.rootNode);
+  ChessHalfMoveTree(this.rootNode);
 
   /// Traverse the tree in DFS order.
-  void traverse(void Function(Chess board, GameNode node) callback) {
+  void traverse(
+      void Function(Chess board, ChessHalfMoveTreeNode node) callback) {
     _logger.fine('Starting traverse()');
 
     final board = Chess();
@@ -19,14 +20,14 @@ class GameWithVariations {
     // A stack data structure used by the DFS algorithm.
     //
     // It contains:
-    //   1. GameNode objects, whose meaning is to step one level deeper in the
-    //      tree in the corresponding direction
+    //   1. ChessHalfMoveTreeNode objects, whose meaning is to step one level
+    //      deeper in the tree in the corresponding direction
     //   2. nulls, which encode to step one level back in the tree
     //
     // The last element of the stack will be the next one being visited, that's
     // why elements are added in reverse order.
-    List<GameNode?> stack = [];
-    void addToStack(List<GameNode> children) {
+    List<ChessHalfMoveTreeNode?> stack = [];
+    void addToStack(List<ChessHalfMoveTreeNode> children) {
       final addToStack = children
           .expand((e) => [
                 e, // step deeper
@@ -40,7 +41,7 @@ class GameWithVariations {
 
     addToStack([rootNode]);
     while (stack.isNotEmpty) {
-      GameNode? node = stack.removeLast();
+      ChessHalfMoveTreeNode? node = stack.removeLast();
       _logger.finest('Popping ${node?.move}');
       if (node == null) {
         board.undo_move();
@@ -64,7 +65,7 @@ class GameWithVariations {
     }
 
     final buffer = StringBuffer();
-    buffer.write('GameWithVariations(\n');
+    buffer.write('ChessHalfMoveTree(\n');
     traverse((board, node) {
       if (node.rootNode) return;
 
@@ -74,10 +75,11 @@ class GameWithVariations {
     return buffer.toString();
   }
 
-  /// Fixes the [GameNode] objects, which were constructed with
-  /// [GameNode.rootNodeWithLateParentInit] or [GameNode.withLateParentInit]
+  /// Fixes the [ChessHalfMoveTreeNode] objects, which were constructed with
+  /// [ChessHalfMoveTreeNode.rootNodeWithLateParentInit] or
+  /// [ChessHalfMoveTreeNode.withLateParentInit]
   void fixParentsRecursively() {
-    final List<GameNode> stack = [];
+    final List<ChessHalfMoveTreeNode> stack = [];
     stack.addAll([rootNode]);
 
     while (stack.isNotEmpty) {
@@ -91,7 +93,7 @@ class GameWithVariations {
 
   @override
   bool operator ==(Object other) {
-    if (other is! GameWithVariations) return false;
+    if (other is! ChessHalfMoveTree) return false;
     return toString() == (other).toString();
   }
 
@@ -99,10 +101,10 @@ class GameWithVariations {
   int get hashCode => toString().hashCode;
 }
 
-class GameNode {
+class ChessHalfMoveTreeNode {
   /// The corresponding [AnnotatedMove].
   ///
-  /// Initialized for all [GameNode], except for the root node (see
+  /// Initialized for all [ChessHalfMoveTreeNode], except for the root node (see
   /// [rootNode]).
   final AnnotatedMove? move;
 
@@ -113,9 +115,9 @@ class GameNode {
   /// side-line of a side-line and so on.
   /// {@endtemplate}
   final int variationDepth;
-  final List<GameNode> children;
-  GameNode? get parent => _parent;
-  GameNode? _parent;
+  final List<ChessHalfMoveTreeNode> children;
+  ChessHalfMoveTreeNode? get parent => _parent;
+  ChessHalfMoveTreeNode? _parent;
 
   bool get rootNode => _parent == null;
 
@@ -126,7 +128,7 @@ class GameNode {
   /// To handle the circular dependency between parents and their children, add
   /// the children later to the [children] list.
   /// {@endtemplate}
-  GameNode.rootNodeWithLateChildrenInit()
+  ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit()
       : _parent = null,
         children = [],
         move = null,
@@ -136,9 +138,9 @@ class GameNode {
   /// of [children].
   ///
   /// {@macro game_node_late_children_init}
-  GameNode.withLateChildrenInit(
+  ChessHalfMoveTreeNode.withLateChildrenInit(
       {required AnnotatedMove move,
-      required GameNode parent,
+      required ChessHalfMoveTreeNode parent,
       required this.variationDepth})
       :
         // ignore: prefer_initializing_formals
@@ -151,10 +153,10 @@ class GameNode {
   ///
   /// {@template game_node_late_parent_init}
   /// You can set [parent] later by calling
-  /// [GameWithVariations.fixParentsRecursively] on the corresponding
-  /// [GameWithVariations] object.
+  /// [ChessHalfMoveTree.fixParentsRecursively] on the corresponding
+  /// [ChessHalfMoveTree] object.
   /// {@endtemplate}
-  GameNode.rootNodeWithLateParentInit({required this.children})
+  ChessHalfMoveTreeNode.rootNodeWithLateParentInit({required this.children})
       : move = null,
         _parent = null,
         variationDepth = 0;
@@ -163,7 +165,7 @@ class GameNode {
   /// initialization of [parent].
   ///
   /// {@macro game_node_late_parent_init}
-  GameNode.withLateParentInit(
+  ChessHalfMoveTreeNode.withLateParentInit(
       {required AnnotatedMove move,
       required this.children,
       required this.variationDepth})
@@ -173,5 +175,5 @@ class GameNode {
         _parent = null;
 
   @override
-  String toString() => 'GameNode(move: ${move?.san})';
+  String toString() => 'ChessHalfMoveTreeNode(move: ${move?.san})';
 }

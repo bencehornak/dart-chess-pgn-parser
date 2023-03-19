@@ -1,26 +1,26 @@
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
 
-GameWithVariations buildGameWithVariations() =>
-    GameWithVariations(GameNode.rootNodeWithLateParentInit(
+ChessHalfMoveTree buildChessHalfMoveTree() =>
+    ChessHalfMoveTree(ChessHalfMoveTreeNode.rootNodeWithLateParentInit(
         // Depth: 1st half move
         children: [
           // d4
-          GameNode.withLateParentInit(
+          ChessHalfMoveTreeNode.withLateParentInit(
             move: AnnotatedMove(Color.WHITE, Chess.SQUARES['d2'],
                 Chess.SQUARES['d4'], 0, PieceType.PAWN, null, null, 1, 'd4'),
             variationDepth: 1,
             children: [],
           ),
           // e4
-          GameNode.withLateParentInit(
+          ChessHalfMoveTreeNode.withLateParentInit(
               move: AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'],
                   Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null, 1, 'e4'),
               variationDepth: 0,
               // Depth: 2nd half move
               children: [
                 // e5
-                GameNode.withLateParentInit(
+                ChessHalfMoveTreeNode.withLateParentInit(
                     move: AnnotatedMove(
                         Color.BLACK,
                         Chess.SQUARES['e7'],
@@ -34,7 +34,7 @@ GameWithVariations buildGameWithVariations() =>
                     variationDepth: 0,
                     children: [
                       // Nc3
-                      GameNode.withLateParentInit(
+                      ChessHalfMoveTreeNode.withLateParentInit(
                           move: AnnotatedMove(
                               Color.WHITE,
                               Chess.SQUARES['b1'],
@@ -48,7 +48,7 @@ GameWithVariations buildGameWithVariations() =>
                           variationDepth: 0,
                           children: [
                             // Nf6
-                            GameNode.withLateParentInit(
+                            ChessHalfMoveTreeNode.withLateParentInit(
                                 move: AnnotatedMove(
                                     Color.BLACK,
                                     Chess.SQUARES['g8'],
@@ -64,7 +64,7 @@ GameWithVariations buildGameWithVariations() =>
                           ]),
                     ]),
                 // e6
-                GameNode.withLateParentInit(
+                ChessHalfMoveTreeNode.withLateParentInit(
                     move: AnnotatedMove(
                         Color.BLACK,
                         Chess.SQUARES['e7'],

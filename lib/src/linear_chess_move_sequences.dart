@@ -5,10 +5,10 @@ import 'package:chess_pgn_parser/chess_pgn_parser.dart';
 
 final _listEquals = const ListEquality().equals;
 
-/// It breaks down a [GameWithVariations] to consecutive linear chunks.
+/// It breaks down a [ChessHalfMoveTree] to consecutive linear chunks.
 ///
 /// ## Example
-/// Let's say that we have a [GameWithVariations] tree represented by the
+/// Let's say that we have a [ChessHalfMoveTree] tree represented by the
 /// following tree:
 ///
 /// ```
@@ -38,7 +38,7 @@ class LinearChessMoveSequences {
   @visibleForTesting
   LinearChessMoveSequences(this.sequences);
 
-  factory LinearChessMoveSequences.fromGame(GameWithVariations game,
+  factory LinearChessMoveSequences.fromGame(ChessHalfMoveTree game,
       {bool captureBoards = false}) {
     final List<LinearChessMoveSequence> linearChessMoveSequencesOut = [];
     final List<LinearChessMoveSequence> linearChessMoveSequencesStack = [];
@@ -127,7 +127,7 @@ class LinearChessMoveSequence {
 }
 
 class LinearChessMoveSequenceItem {
-  final GameNode node;
+  final ChessHalfMoveTreeNode node;
   final Chess? board;
 
   @visibleForTesting

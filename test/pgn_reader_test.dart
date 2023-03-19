@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 
 void main() {
   final String expectedGameTree = '''
-[GameWithVariations(
+[ChessHalfMoveTree(
   1. e4
     1... e5
       2. Nc3
@@ -31,7 +31,7 @@ void main() {
   });
 
   group('simple.pgn', () {
-    late List<GameWithVariations> tree;
+    late List<ChessHalfMoveTree> tree;
 
     setUpAll(() async {
       String input = await File('test/resources/pgn/simple.pgn').readAsString();
@@ -69,7 +69,7 @@ void main() {
     String input = await File('test/resources/pgn/advanced.pgn').readAsString();
     final reader = PgnReader.fromString(input);
 
-    List<GameWithVariations>? database;
+    List<ChessHalfMoveTree>? database;
     expect(() => database = reader.parse(), returnsNormally);
     expect(() => database!.toString(), returnsNormally);
   });
