@@ -1,5 +1,5 @@
 import 'package:chess/chess.dart';
-import 'package:chess_pgn_parser/src/tree.dart';
+import 'package:chess_pgn_parser/chess_pgn_parser.dart';
 import 'package:test/test.dart';
 
 import 'test_data.dart' as test_data;
