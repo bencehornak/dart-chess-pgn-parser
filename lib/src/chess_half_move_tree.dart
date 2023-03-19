@@ -1,14 +1,13 @@
 import 'package:chess/chess.dart';
+import 'package:chess_pgn_parser/src/tree.dart';
 import 'package:logging/logging.dart';
 
 import 'annotated_move.dart';
 
 final _logger = Logger('ChessHalfMoveTree');
 
-class ChessHalfMoveTree {
-  final ChessHalfMoveTreeNode rootNode;
-
-  ChessHalfMoveTree(this.rootNode);
+class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
+  ChessHalfMoveTree(super.rootNode);
 
   /// Traverse the tree in DFS order.
   void traverse(
@@ -75,22 +74,6 @@ class ChessHalfMoveTree {
     return buffer.toString();
   }
 
-  /// Fixes the [ChessHalfMoveTreeNode] objects, which were constructed with
-  /// [ChessHalfMoveTreeNode.rootNodeWithLateParentInit] or
-  /// [ChessHalfMoveTreeNode.withLateParentInit]
-  void fixParentsRecursively() {
-    final List<ChessHalfMoveTreeNode> stack = [];
-    stack.addAll([rootNode]);
-
-    while (stack.isNotEmpty) {
-      final node = stack.removeLast();
-      node.children.forEach((child) {
-        child._parent = node;
-        stack.add(child);
-      });
-    }
-  }
-
   @override
   bool operator ==(Object other) {
     if (other is! ChessHalfMoveTree) return false;
@@ -101,7 +84,7 @@ class ChessHalfMoveTree {
   int get hashCode => toString().hashCode;
 }
 
-class ChessHalfMoveTreeNode {
+class ChessHalfMoveTreeNode extends TreeNode<ChessHalfMoveTreeNode> {
   /// The corresponding [AnnotatedMove].
   ///
   /// Initialized for all [ChessHalfMoveTreeNode], except for the root node (see
@@ -115,29 +98,16 @@ class ChessHalfMoveTreeNode {
   /// side-line of a side-line and so on.
   /// {@endtemplate}
   final int variationDepth;
-  final List<ChessHalfMoveTreeNode> children;
-  ChessHalfMoveTreeNode? get parent => _parent;
-  ChessHalfMoveTreeNode? _parent;
 
-  bool get rootNode => _parent == null;
+  bool get rootNode => parent == null;
 
-  /// Constructor for the root node, which delays the initialization of
-  /// [children].
-  ///
-  /// {@template game_node_late_children_init}
-  /// To handle the circular dependency between parents and their children, add
-  /// the children later to the [children] list.
-  /// {@endtemplate}
+  /// {@macro tree_node_root_node_with_late_children_init}
   ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit()
-      : _parent = null,
-        children = [],
-        move = null,
-        variationDepth = 0;
+      : move = null,
+        variationDepth = 0,
+        super.rootNodeWithLateChildrenInit();
 
-  /// Constructor, which sets [parent] right away, but delays the initialization
-  /// of [children].
-  ///
-  /// {@macro game_node_late_children_init}
+  /// {@macro tree_node_with_late_children_init}
   ChessHalfMoveTreeNode.withLateChildrenInit(
       {required AnnotatedMove move,
       required ChessHalfMoveTreeNode parent,
@@ -145,34 +115,24 @@ class ChessHalfMoveTreeNode {
       :
         // ignore: prefer_initializing_formals
         move = move,
-        _parent = parent,
-        children = [];
+        super.withLateChildrenInit(parent: parent);
 
-  /// Constructor, which sets [children] right away, but delays the
-  /// initialization of [parent].
-  ///
-  /// {@template game_node_late_parent_init}
-  /// You can set [parent] later by calling
-  /// [ChessHalfMoveTree.fixParentsRecursively] on the corresponding
-  /// [ChessHalfMoveTree] object.
-  /// {@endtemplate}
-  ChessHalfMoveTreeNode.rootNodeWithLateParentInit({required this.children})
+  /// {@macro tree_node_root_node_with_late_parent_init}
+  ChessHalfMoveTreeNode.rootNodeWithLateParentInit(
+      {required List<ChessHalfMoveTreeNode> children})
       : move = null,
-        _parent = null,
-        variationDepth = 0;
+        variationDepth = 0,
+        super.rootNodeWithLateParentInit(children: children);
 
-  /// Constructor, which sets [children] right away, but delays the
-  /// initialization of [parent].
-  ///
-  /// {@macro game_node_late_parent_init}
+  /// {@macro tree_node_with_late_parent_init}
   ChessHalfMoveTreeNode.withLateParentInit(
       {required AnnotatedMove move,
-      required this.children,
+      required List<ChessHalfMoveTreeNode> children,
       required this.variationDepth})
       :
         // ignore: prefer_initializing_formals
         move = move,
-        _parent = null;
+        super.withLateParentInit(children: children);
 
   @override
   String toString() => 'ChessHalfMoveTreeNode(move: ${move?.san})';
