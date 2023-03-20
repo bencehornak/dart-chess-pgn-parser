@@ -4,6 +4,7 @@ class AnnotatedMove extends Move {
   // Let's cache the moveNumber and the SAN notation for better performance
   final int moveNumber;
   final String san;
+  String? comment;
 
   /// Returns the number of half moves in the game, including this one.
   ///

@@ -95,6 +95,7 @@ element
  : full_move_number_indication
  | black_move_number_indication
  | san_move
+ | brace_comment
  | NUMERIC_ANNOTATION_GLYPH
  ;
 
@@ -151,8 +152,11 @@ REST_OF_LINE_COMMENT
 /// loses its special meaning and is ignored.  A semicolon appearing inside of a
 /// brace comment loses its special meaning and is ignored.  Braces appearing
 /// inside of a semicolon comments lose their special meaning and are ignored.
+brace_comment
+ : BRACE_COMMENT
+ ;
 BRACE_COMMENT
- : '{' ~'}'* '}' -> skip
+ : LEFT_BRACE (~'}')* RIGHT_BRACE
  ;
 
 /// There is a special escape mechanism for PGN data.  This mechanism is triggered
@@ -217,6 +221,16 @@ RIGHT_BRACKET
  : ']'
  ;
 
+/// The left and right brace characters ("{" and "}") are tokens.  They are used
+/// to delimit tag pairs (see below).  Both are self terminating.
+LEFT_BRACE
+ : '{'
+ ;
+
+RIGHT_BRACE
+ : '}'
+ ;
+
 /// The left and right parenthesis characters ("(" and ")") are tokens.  They are
 /// used to delimit Recursive Annotation Variations (see below).  Both are self
 /// terminating.
@@ -265,10 +279,4 @@ SYMBOL
 /// present, it is always the last part of the move symbol.
 SUFFIX_ANNOTATION
  : [?!] [?!]?
- ;
-
-// A fall through rule that will catch any character not matched by any of the
-// previous lexer rules.
-UNEXPECTED_CHAR
- : .
  ;

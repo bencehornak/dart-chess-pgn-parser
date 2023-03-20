@@ -1,4 +1,4 @@
-// Generated from antlr4/PGN.g4 by ANTLR 4.11.1
+// Generated from antlr4/PGN.g4 by ANTLR 4.12.0
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -111,4 +111,11 @@ abstract class PGNListener extends ParseTreeListener {
   /// Exit a parse tree produced by [PGNParser.game_termination].
   /// [ctx] the parse tree
   void exitGame_termination(Game_terminationContext ctx);
+
+  /// Enter a parse tree produced by [PGNParser.brace_comment].
+  /// [ctx] the parse tree
+  void enterBrace_comment(Brace_commentContext ctx);
+  /// Exit a parse tree produced by [PGNParser.brace_comment].
+  /// [ctx] the parse tree
+  void exitBrace_comment(Brace_commentContext ctx);
 }

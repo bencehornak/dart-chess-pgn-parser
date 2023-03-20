@@ -60,7 +60,8 @@ class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
   @override
   String toString() {
     String formatMove(AnnotatedMove move) {
-      return '${'  ' * (move.totalHalfMoveNumber - 1)}${move.toHumanReadable()}';
+      final commentText = move.comment == null ? '' : ' {${move.comment}}';
+      return '${'  ' * (move.totalHalfMoveNumber - 1)}${move.toHumanReadable()}$commentText';
     }
 
     final buffer = StringBuffer();

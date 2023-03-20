@@ -1,4 +1,4 @@
-// Generated from antlr4/PGN.g4 by ANTLR 4.11.1
+// Generated from antlr4/PGN.g4 by ANTLR 4.12.0
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -129,6 +129,14 @@ class PGNBaseListener implements PGNListener {
   /// The default implementation does nothing.
   @override
   void exitGame_termination(Game_terminationContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterBrace_comment(Brace_commentContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitBrace_comment(Brace_commentContext ctx) {}
 
   /// The default implementation does nothing.
   @override
