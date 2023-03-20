@@ -11,7 +11,7 @@ dependencies:
   chess: ^0.8.0
   collection: ^1.17.1
   logging: ^1.1.1
-  meta: ^1.9.0
+  meta: any
 
 dev_dependencies:
   lints: ^2.0.0
