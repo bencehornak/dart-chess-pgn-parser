@@ -226,6 +226,17 @@ class _MoveTextParseTreeListener extends PGNListener {
   }
 
   @override
+  void enterBrace_comment(Brace_commentContext ctx) {
+    _assertWithContextFeedback(ctx,
+        nodeStack.isNotEmpty || nodeStack.last.rootNode, 'Unexpected comment');
+    final commentWithBraces = ctx.text;
+    final comment = commentWithBraces
+        .replaceFirst(RegExp(r'^{'), '')
+        .replaceFirst(RegExp(r'}$'), '');
+    nodeStack.last.move!.comment = comment;
+  }
+
+  @override
   void noSuchMethod(Invocation invocation) {
     // just ignore the remaining events
   }
