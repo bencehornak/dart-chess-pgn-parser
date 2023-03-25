@@ -1,10 +1,8 @@
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/src/tree.dart';
-import 'package:logging/logging.dart';
+import 'package:chess_pgn_parser/src/tree_iterator.dart';
 
 import 'annotated_move.dart';
-
-final _logger = Logger('ChessHalfMoveTree');
 
 class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
   ChessHalfMoveTree(super.rootNode);
@@ -12,49 +10,11 @@ class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
   /// Traverse the tree in DFS order.
   void traverse(
       void Function(Chess board, ChessHalfMoveTreeNode node) callback) {
-    _logger.fine('Starting traverse()');
-
-    final board = Chess();
-
-    // A stack data structure used by the DFS algorithm.
-    //
-    // It contains:
-    //   1. ChessHalfMoveTreeNode objects, whose meaning is to step one level
-    //      deeper in the tree in the corresponding direction
-    //   2. nulls, which encode to step one level back in the tree
-    //
-    // The last element of the stack will be the next one being visited, that's
-    // why elements are added in reverse order.
-    List<ChessHalfMoveTreeNode?> stack = [];
-    void addToStack(List<ChessHalfMoveTreeNode> children) {
-      final addToStack = children
-          .expand((e) => [
-                e, // step deeper
-                null, // step back
-              ])
-          .toList()
-          .reversed;
-      _logger.finest('Adding to stack: $addToStack');
-      stack.addAll(addToStack);
+    final iterator = ChessHalfMoveDepthFirstSearchTreeIterator(this);
+    while (iterator.moveNext()) {
+      final element = iterator.current;
+      callback(element.board, element.node);
     }
-
-    addToStack([rootNode]);
-    while (stack.isNotEmpty) {
-      ChessHalfMoveTreeNode? node = stack.removeLast();
-      _logger.finest('Popping ${node?.move}');
-      if (node == null) {
-        board.undo_move();
-      } else {
-        board.move(node.move);
-        callback(board, node);
-        addToStack(node.children);
-      }
-      _logger.finest('Move number: ${board.move_number}');
-    }
-
-    assert(board.move_number == 1,
-        'We should arrive back to the start after performing the DFS');
-    _logger.fine('Leaving traverse()');
   }
 
   @override
@@ -137,4 +97,40 @@ class ChessHalfMoveTreeNode extends TreeNode<ChessHalfMoveTreeNode> {
 
   @override
   String toString() => 'ChessHalfMoveTreeNode(move: ${move?.san})';
+}
+
+class ChessHalfMoveDepthFirstSearchTreeIterator
+    extends DepthFirstSearchTreeIterator<ChessHalfMoveTree,
+        ChessHalfMoveTreeNode, ChessHalfMoveTreeIteratorElement> {
+  final _board = Chess();
+
+  ChessHalfMoveDepthFirstSearchTreeIterator(super.tree);
+
+  @override
+  ChessHalfMoveTreeIteratorElement transformNode(ChessHalfMoveTreeNode node) =>
+      ChessHalfMoveTreeIteratorElement(node: node, board: _board);
+
+  @override
+  void onStepIn(ChessHalfMoveTreeNode node) {
+    _board.move(node.move);
+  }
+
+  @override
+  void onStepOut() {
+    _board.undo_move();
+  }
+
+  @override
+  void onTraversalFinished() {
+    assert(_board.move_number == 1,
+        'We should arrive back to the start after performing the DFS');
+  }
+}
+
+class ChessHalfMoveTreeIteratorElement {
+  final ChessHalfMoveTreeNode node;
+  final Chess board;
+
+  const ChessHalfMoveTreeIteratorElement(
+      {required this.node, required this.board});
 }
