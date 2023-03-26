@@ -1,8 +1,11 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
 
 import 'tree_iterator.dart';
+
+final _listEquals = ListEquality().equals;
 
 /// It breaks down a [ChessHalfMoveTree] to consecutive linear chunks.
 ///
@@ -105,6 +108,13 @@ class LinearMoveSequenceTree extends Tree<LinearMoveSequenceTreeNode> {
 
     return out.toString();
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is LinearMoveSequenceTree && rootNode == other.rootNode;
+
+  @override
+  int get hashCode => rootNode.hashCode;
 }
 
 /// A linear consecutive chunk of chess moves.
@@ -142,6 +152,16 @@ class LinearMoveSequenceTreeNode extends TreeNode<LinearMoveSequenceTreeNode> {
   void _addSequenceItem(LinearMoveSequenceItem item) {
     sequence.add(item);
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is LinearMoveSequenceTreeNode &&
+      _listEquals(sequence, other.sequence) &&
+      _listEquals(children, other.children);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(sequence.cast<Object>() + children.cast<Object>());
 }
 
 class LinearMoveSequenceItem {
