@@ -50,8 +50,9 @@ class LinearMoveSequenceTree extends Tree<LinearMoveSequenceTreeNode> {
 
       // Start a new sequence, if this is the first traversed node, or if the
       // node's parent has multiple children.
-      if (stack.isEmpty || node.parent!.children.length > 1) {
+      if (node.parent!.children.length > 1) {
         while (stack.isNotEmpty &&
+            stack.last.sequence.isNotEmpty &&
             stack.last.sequence.first.node.move!.totalHalfMoveNumber >=
                 node.move!.totalHalfMoveNumber) {
           stack.removeLast();
