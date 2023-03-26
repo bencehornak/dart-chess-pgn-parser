@@ -32,6 +32,8 @@ abstract class TreeNode<Node> {
   int get depth => _depth!;
   int? _depth;
 
+  bool get rootNode => parent == null;
+
   /// {@template tree_node_root_node_with_late_children_init}
   /// Constructor for the root node, which delays the initialization of
   /// [children].

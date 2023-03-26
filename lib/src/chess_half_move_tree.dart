@@ -60,8 +60,6 @@ class ChessHalfMoveTreeNode extends TreeNode<ChessHalfMoveTreeNode> {
   /// {@endtemplate}
   final int variationDepth;
 
-  bool get rootNode => parent == null;
-
   /// {@macro tree_node_root_node_with_late_children_init}
   ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit()
       : move = null,
