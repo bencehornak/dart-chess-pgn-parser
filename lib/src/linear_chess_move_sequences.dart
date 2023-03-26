@@ -2,6 +2,8 @@ import 'package:meta/meta.dart';
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
 
+import 'tree_iterator.dart';
+
 /// It breaks down a [ChessHalfMoveTree] to consecutive linear chunks.
 ///
 /// ## Example
@@ -15,18 +17,21 @@ import 'package:chess_pgn_parser/chess_pgn_parser.dart';
 ///     ├─ 1... e5
 ///     │   └─ 2. Nc3
 ///     │       └─ 2... Nf6
+///     │       └─ 2... Nc6
 ///     └─ 1... e6
 /// ```
 ///
-/// The structure of the output [LinearMoveSequenceTree] will look like this:
+/// The structure of the output [LinearMoveSequenceTree] will look like this
+/// (each line corresponds to a [LinearMoveSequenceTreeNode], the moves in one
+/// line are the elements of the [LinearMoveSequenceTreeNode.sequence] list):
 /// ```
-/// LinearChessMoveSequences(
-///   sequences: [
-///     LinearChessMoveSequence(depth: 0, sequence: 1. d4),
-///     LinearChessMoveSequence(depth: 0, sequence: 1. e4),
-///     LinearChessMoveSequence(depth: 1, sequence: 1... e5 2. Nc3 Nf6),
-///     LinearChessMoveSequence(depth: 1, sequence: 1... e6)
-///   ]
+/// LinearMoveSequenceTree(
+///   1. d4
+///   1. e4
+///     1... e5 2. Nc3
+///       2... Nf6
+///       2... Nc6
+///     1... e6
 /// )
 /// ```
 class LinearMoveSequenceTree extends Tree<LinearMoveSequenceTreeNode> {
@@ -65,6 +70,41 @@ class LinearMoveSequenceTree extends Tree<LinearMoveSequenceTreeNode> {
           LinearChessMoveSequenceItem(node: node, board: boardCopy));
     });
     return LinearMoveSequenceTree(rootNode);
+  }
+
+  /// Traverse the tree in DFS order.
+  void traverse(void Function(LinearMoveSequenceTreeNode node) callback) {
+    final iterator = SimpleDepthFirstSearchTreeIterator<LinearMoveSequenceTree,
+        LinearMoveSequenceTreeNode>(this);
+    while (iterator.moveNext()) {
+      final element = iterator.current;
+      callback(element);
+    }
+  }
+
+  @override
+  String toString() {
+    final out = StringBuffer();
+    out.write('LinearMoveSequenceTree(\n');
+
+    traverse((linearChessMoveSequence) {
+      if (linearChessMoveSequence.rootNode) return;
+      out.write('  ' * linearChessMoveSequence.depth);
+
+      linearChessMoveSequence.sequence.asMap().forEach((index, sequenceItem) {
+        bool firstOneInSequence = index == 0;
+
+        if (!firstOneInSequence) out.write(' ');
+
+        out.write(sequenceItem.node.move!
+            .toHumanReadable(showBlackMoveNumberIndicator: firstOneInSequence));
+      });
+      out.write('\n');
+    });
+
+    out.write(')');
+
+    return out.toString();
   }
 }
 

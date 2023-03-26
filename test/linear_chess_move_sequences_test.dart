@@ -57,15 +57,12 @@ void main() {
     );
   });
   test('toString()', () {
-    expect(
-        expectedLinearChessMoveSequences.toString(),
-        'LinearChessMoveSequences(\n'
-        '  sequences: [\n'
-        '    LinearChessMoveSequence(depth: 0, sequence: 1. d4),\n'
-        '    LinearChessMoveSequence(depth: 0, sequence: 1. e4),\n'
-        '    LinearChessMoveSequence(depth: 1, sequence: 1... e5 2. Nc3 Nf6),\n'
-        '    LinearChessMoveSequence(depth: 1, sequence: 1... e6)\n'
-        '  ]\n'
-        ')');
+    expect(expectedLinearChessMoveSequences.toString(), '''
+LinearMoveSequenceTree(
+  1. d4
+  1. e4
+    1... e5 2. Nc3 Nf6
+    1... e6
+)''');
   });
 }

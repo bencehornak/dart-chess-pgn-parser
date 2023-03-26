@@ -88,3 +88,20 @@ abstract class DepthFirstSearchTreeIterator<T extends Tree<N>,
     _stack.addAll(addToStack);
   }
 }
+
+class SimpleDepthFirstSearchTreeIterator<T extends Tree<N>,
+    N extends TreeNode<N>> extends DepthFirstSearchTreeIterator<T, N, N> {
+  SimpleDepthFirstSearchTreeIterator(super.tree);
+
+  @override
+  void onStepIn(N node) {}
+
+  @override
+  void onStepOut() {}
+
+  @override
+  void onTraversalFinished() {}
+
+  @override
+  N transformNode(N node) => node;
+}
