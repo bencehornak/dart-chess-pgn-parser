@@ -63,7 +63,7 @@ class PgnReader {
       final valuesStringMatch = valuesStringRegexp.firstMatch(valuesString);
       _assertWithContextFeedback(
           tagPair,
-          valuesStringMatch != null && valuesStringMatch!.group(1) != null,
+          valuesStringMatch != null && valuesStringMatch.group(1) != null,
           'Incorrect value representation');
       final valuesStringWithoutQuotes = valuesStringMatch!.group(1)!;
       final values = valuesStringWithoutQuotes.split(':');

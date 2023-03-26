@@ -4,8 +4,22 @@ import 'package:chess_pgn_parser/src/tree_iterator.dart';
 
 import 'annotated_move.dart';
 
+T _onlyElement<T>(List<T> list) {
+  assert(list.length == 1);
+  return list.first;
+}
+
 class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
   final Map<String, List<String>> tags;
+
+  String get tagEvent => _onlyElement(tags['Event']!);
+  String get tagSite => _onlyElement(tags['Site']!);
+  DateTime get tagDate =>
+      DateTime.parse(_onlyElement(tags['Date']!).replaceAll('.', '-'));
+  String get tagRound => _onlyElement(tags['Round']!);
+  List<String> get tagWhite => tags['White']!;
+  List<String> get tagBlack => tags['Black']!;
+  String get tagResult => _onlyElement(tags['Result']!);
 
   ChessHalfMoveTree(
       {required ChessHalfMoveTreeNode rootNode, required this.tags})
