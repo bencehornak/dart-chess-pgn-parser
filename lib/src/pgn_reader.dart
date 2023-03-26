@@ -37,8 +37,8 @@ class PgnReader {
   }
 
   ChessHalfMoveTree _parseGameContext(Pgn_gameContext gameContext) {
-    final firstMoves = _parseGameMoveTextSectionContext(gameContext);
-    return ChessHalfMoveTree(firstMoves);
+    final rootNode = _parseGameMoveTextSectionContext(gameContext);
+    return ChessHalfMoveTree(rootNode);
   }
 
   ChessHalfMoveTreeNode _parseGameMoveTextSectionContext(
