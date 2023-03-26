@@ -7,6 +7,18 @@ import 'test_data.dart' as test_data;
 void main() {
   ChessHalfMoveTree game = test_data.buildChessHalfMoveTree();
 
+  group('depth', () {
+    test('depth == move.move_count', () {
+      game.traverse((board, node) {
+        if (node.rootNode) return;
+        expect(
+            node.depth,
+            inInclusiveRange(
+                2 * node.move!.moveNumber - 1, 2 * node.move!.moveNumber));
+      });
+    });
+  });
+
   group('traverse()', () {
     test('traverse() lastMove argument is correct', () {
       List<String?> actualPath = [];
