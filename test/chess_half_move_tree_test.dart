@@ -143,12 +143,21 @@ void main() {
   test('toString()', () {
     expect(game.toString(), '''
 ChessHalfMoveTree(
-  1. d4
-  1. e4
-    1... e5
-      2. Nc3
-        2... Nf6
-    1... e6
+  tags:
+    Event: Test
+    Site: Test Site
+    Date: 2023.03.06
+    Round: -
+    White: Bence Hornák
+    Black: Bence Hornák
+    Result: *
+  moves:
+    1. d4
+    1. e4
+      1... e5
+        2. Nc3
+          2... Nf6
+      1... e6
 )''');
   });
 
