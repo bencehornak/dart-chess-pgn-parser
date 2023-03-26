@@ -40,34 +40,32 @@ class LinearMoveSequenceTree extends Tree<LinearMoveSequenceTreeNode> {
 
   factory LinearMoveSequenceTree.fromGame(ChessHalfMoveTree game,
       {bool captureBoards = false}) {
-    final List<LinearMoveSequenceTreeNode> linearChessMoveSequencesStack = [];
+    final List<LinearMoveSequenceTreeNode> stack = [];
 
     final rootNode = LinearMoveSequenceTreeNode.rootNodeWithLateChildrenInit();
-    linearChessMoveSequencesStack.add(rootNode);
+    stack.add(rootNode);
 
     game.traverse((board, node) {
       if (node.rootNode) return; // Root node has no visualization
 
       // Start a new sequence, if this is the first traversed node, or if the
       // node's parent has multiple children.
-      if (linearChessMoveSequencesStack.isEmpty ||
-          node.parent!.children.length > 1) {
-        while (linearChessMoveSequencesStack.isNotEmpty &&
-            linearChessMoveSequencesStack
-                    .last.sequence.first.node.move!.totalHalfMoveNumber >=
+      if (stack.isEmpty || node.parent!.children.length > 1) {
+        while (stack.isNotEmpty &&
+            stack.last.sequence.first.node.move!.totalHalfMoveNumber >=
                 node.move!.totalHalfMoveNumber) {
-          linearChessMoveSequencesStack.removeLast();
+          stack.removeLast();
         }
 
-        final parent = linearChessMoveSequencesStack.last;
+        final parent = stack.last;
         final newSequence =
             LinearMoveSequenceTreeNode.withLateChildrenInit(parent: parent);
         parent.children.add(newSequence);
-        linearChessMoveSequencesStack.add(newSequence);
+        stack.add(newSequence);
       }
       final boardCopy = captureBoards ? board.copy() : null;
-      linearChessMoveSequencesStack.last._addSequenceItem(
-          LinearChessMoveSequenceItem(node: node, board: boardCopy));
+      stack.last._addSequenceItem(
+          LinearMoveSequenceItem(node: node, board: boardCopy));
     });
     return LinearMoveSequenceTree(rootNode);
   }
@@ -87,11 +85,11 @@ class LinearMoveSequenceTree extends Tree<LinearMoveSequenceTreeNode> {
     final out = StringBuffer();
     out.write('LinearMoveSequenceTree(\n');
 
-    traverse((linearChessMoveSequence) {
-      if (linearChessMoveSequence.rootNode) return;
-      out.write('  ' * linearChessMoveSequence.depth);
+    traverse((node) {
+      if (node.rootNode) return;
+      out.write('  ' * node.depth);
 
-      linearChessMoveSequence.sequence.asMap().forEach((index, sequenceItem) {
+      node.sequence.asMap().forEach((index, sequenceItem) {
         bool firstOneInSequence = index == 0;
 
         if (!firstOneInSequence) out.write(' ');
@@ -115,7 +113,7 @@ class LinearMoveSequenceTree extends Tree<LinearMoveSequenceTreeNode> {
 /// 2. the root node (not including the root node itself)
 /// 3. or the end of the variation
 class LinearMoveSequenceTreeNode extends TreeNode<LinearMoveSequenceTreeNode> {
-  final List<LinearChessMoveSequenceItem> sequence;
+  final List<LinearMoveSequenceItem> sequence;
 
   /// {@macro tree_node_root_node_with_late_children_init}
   LinearMoveSequenceTreeNode.rootNodeWithLateChildrenInit()
@@ -140,24 +138,24 @@ class LinearMoveSequenceTreeNode extends TreeNode<LinearMoveSequenceTreeNode> {
       required List<LinearMoveSequenceTreeNode> children})
       : super.withLateParentInit(children: children);
 
-  void _addSequenceItem(LinearChessMoveSequenceItem item) {
+  void _addSequenceItem(LinearMoveSequenceItem item) {
     sequence.add(item);
   }
 }
 
-class LinearChessMoveSequenceItem {
+class LinearMoveSequenceItem {
   final ChessHalfMoveTreeNode node;
   final Chess? board;
 
   @visibleForTesting
-  LinearChessMoveSequenceItem({
+  LinearMoveSequenceItem({
     required this.node,
     this.board,
   });
 
   @override
   bool operator ==(Object other) =>
-      other is LinearChessMoveSequenceItem
+      other is LinearMoveSequenceItem
       // If the nodes are identical, the board should also be.
       &&
       identical(node, other.node);

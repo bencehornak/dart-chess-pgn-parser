@@ -5,31 +5,31 @@ import 'test_data.dart' as test_data;
 
 void main() {
   final game = test_data.buildChessHalfMoveTree();
-  final expectedLinearChessMoveSequences = LinearMoveSequenceTree(
+  final linearMoveSequenceTree = LinearMoveSequenceTree(
     LinearMoveSequenceTreeNode.rootNodeWithLateParentInit(
       sequence: [],
       children: [
         // 1. d4
         LinearMoveSequenceTreeNode.withLateParentInit(
           sequence: [
-            LinearChessMoveSequenceItem(node: game.rootNode.children[0]),
+            LinearMoveSequenceItem(node: game.rootNode.children[0]),
           ],
           children: [],
         ),
         // 1. e4
         LinearMoveSequenceTreeNode.withLateParentInit(
           sequence: [
-            LinearChessMoveSequenceItem(node: game.rootNode.children[1]),
+            LinearMoveSequenceItem(node: game.rootNode.children[1]),
           ],
           children: [
             // 1... e5 2. Nc3 Nf6
             LinearMoveSequenceTreeNode.withLateParentInit(
               sequence: [
-                LinearChessMoveSequenceItem(
+                LinearMoveSequenceItem(
                     node: game.rootNode.children[1].children[0]),
-                LinearChessMoveSequenceItem(
+                LinearMoveSequenceItem(
                     node: game.rootNode.children[1].children[0].children[0]),
-                LinearChessMoveSequenceItem(
+                LinearMoveSequenceItem(
                     node: game.rootNode.children[1].children[0].children[0]
                         .children[0]),
               ],
@@ -38,7 +38,7 @@ void main() {
             // 1... e6
             LinearMoveSequenceTreeNode.withLateParentInit(
               sequence: [
-                LinearChessMoveSequenceItem(
+                LinearMoveSequenceItem(
                     node: game.rootNode.children[1].children[1]),
               ],
               children: [],
@@ -53,11 +53,11 @@ void main() {
 
     expect(
       sequences,
-      expectedLinearChessMoveSequences,
+      linearMoveSequenceTree,
     );
   });
   test('toString()', () {
-    expect(expectedLinearChessMoveSequences.toString(), '''
+    expect(linearMoveSequenceTree.toString(), '''
 LinearMoveSequenceTree(
   1. d4
   1. e4
