@@ -170,7 +170,8 @@ ChessHalfMoveTree(
       expect(
           game,
           isNot(ChessHalfMoveTree(
-              ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit())));
+              tags: {},
+              rootNode: ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit())));
     });
   });
 
@@ -183,7 +184,9 @@ ChessHalfMoveTree(
       expect(
           game.hashCode,
           isNot(ChessHalfMoveTree(
-                  ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit())
+                  tags: {},
+                  rootNode:
+                      ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit())
               .hashCode));
     });
   });

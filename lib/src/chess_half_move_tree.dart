@@ -5,7 +5,11 @@ import 'package:chess_pgn_parser/src/tree_iterator.dart';
 import 'annotated_move.dart';
 
 class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
-  ChessHalfMoveTree(super.rootNode);
+  final Map<String, List<String>> tags;
+
+  ChessHalfMoveTree(
+      {required ChessHalfMoveTreeNode rootNode, required this.tags})
+      : super(rootNode);
 
   /// Traverse the tree in DFS order.
   void traverse(
@@ -26,10 +30,18 @@ class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
 
     final buffer = StringBuffer();
     buffer.write('ChessHalfMoveTree(\n');
+
+    // Tags
+    buffer.write('  tags:\n');
+    tags.forEach(
+        (key, value) => buffer.write('    $key: ${value.join(', ')}\n'));
+
+    // Moves
+    buffer.write('  moves:\n');
     traverse((board, node) {
       if (node.rootNode) return;
 
-      buffer.write('  ${formatMove(node.move!)}\n');
+      buffer.write('    ${formatMove(node.move!)}\n');
     });
     buffer.write(')');
     return buffer.toString();

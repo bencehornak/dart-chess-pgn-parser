@@ -37,8 +37,39 @@ class PgnReader {
   }
 
   ChessHalfMoveTree _parseGameContext(Pgn_gameContext gameContext) {
+    final tags = _parseGameTagSectionContext(gameContext);
     final rootNode = _parseGameMoveTextSectionContext(gameContext);
-    return ChessHalfMoveTree(rootNode);
+    return ChessHalfMoveTree(rootNode: rootNode, tags: tags);
+  }
+
+  Map<String, List<String>> _parseGameTagSectionContext(
+      Pgn_gameContext gameContext) {
+    final tagSection = gameContext.tag_section();
+    _assertWithContextFeedback(
+        gameContext,
+        tagSection != null && tagSection.children != null,
+        'Tag section is missing');
+
+    return Map.fromEntries(tagSection!.tag_pairs().map((tagPair) {
+      // Tag representation format:
+      // [Black "Smith, John Q.:Woodpusher 2000"]
+
+      // name is unescaped
+      final name = tagPair.tag_name()!.text;
+
+      // value is double-quoted and is a colon-delimited list
+      final valuesString = tagPair.tag_value()!.text;
+      final valuesStringRegexp = RegExp(r'^"([^"]*)"$');
+      final valuesStringMatch = valuesStringRegexp.firstMatch(valuesString);
+      _assertWithContextFeedback(
+          tagPair,
+          valuesStringMatch != null && valuesStringMatch!.group(1) != null,
+          'Incorrect value representation');
+      final valuesStringWithoutQuotes = valuesStringMatch!.group(1)!;
+      final values = valuesStringWithoutQuotes.split(':');
+
+      return MapEntry(name, values);
+    }));
   }
 
   ChessHalfMoveTreeNode _parseGameMoveTextSectionContext(
@@ -240,12 +271,12 @@ class _MoveTextParseTreeListener extends PGNListener {
   void noSuchMethod(Invocation invocation) {
     // just ignore the remaining events
   }
-
-  void _assertWithContextFeedback(
-      ParserRuleContext ctx, bool condition, String message) {
-    if (!condition) _failWithContextFeedback(ctx, message);
-  }
-
-  Never _failWithContextFeedback(ParserRuleContext ctx, String message) =>
-      throw PgnReaderException(ctx, message);
 }
+
+void _assertWithContextFeedback(
+    ParserRuleContext ctx, bool condition, String message) {
+  if (!condition) _failWithContextFeedback(ctx, message);
+}
+
+Never _failWithContextFeedback(ParserRuleContext ctx, String message) =>
+    throw PgnReaderException(ctx, message);

@@ -9,12 +9,21 @@ import 'package:test/test.dart';
 void main() {
   final String expectedGameTree = '''
 [ChessHalfMoveTree(
-  1. e4
-    1... e5
-      2. Nc3 {but the Vieanna-opening is great too}
-        2... Nf6
-    1... e6
-  1. d4 {d4 openings are great}
+  tags:
+    Event: Test
+    Site: Test Site
+    Date: 2023.03.06
+    Round: -
+    White: Bence Hornák
+    Black: Bence Hornák
+    Result: *
+  moves:
+    1. e4
+      1... e5
+        2. Nc3 {but the Vieanna-opening is great too}
+          2... Nf6
+      1... e6
+    1. d4 {d4 openings are great}
 )]''';
 
   StreamSubscription<LogRecord>? loggerSubscription;
