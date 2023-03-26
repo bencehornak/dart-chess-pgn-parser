@@ -1,9 +1,6 @@
-import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
-
-final _listEquals = const ListEquality().equals;
 
 /// It breaks down a [ChessHalfMoveTree] to consecutive linear chunks.
 ///
@@ -21,7 +18,7 @@ final _listEquals = const ListEquality().equals;
 ///     └─ 1... e6
 /// ```
 ///
-/// The structure of the output [LinearChessMoveSequences] will look like this:
+/// The structure of the output [LinearMoveSequenceTree] will look like this:
 /// ```
 /// LinearChessMoveSequences(
 ///   sequences: [
@@ -32,16 +29,16 @@ final _listEquals = const ListEquality().equals;
 ///   ]
 /// )
 /// ```
-class LinearChessMoveSequences {
-  final List<LinearChessMoveSequence> sequences;
-
+class LinearMoveSequenceTree extends Tree<LinearMoveSequenceTreeNode> {
   @visibleForTesting
-  LinearChessMoveSequences(this.sequences);
+  LinearMoveSequenceTree(super.rootNode);
 
-  factory LinearChessMoveSequences.fromGame(ChessHalfMoveTree game,
+  factory LinearMoveSequenceTree.fromGame(ChessHalfMoveTree game,
       {bool captureBoards = false}) {
-    final List<LinearChessMoveSequence> linearChessMoveSequencesOut = [];
-    final List<LinearChessMoveSequence> linearChessMoveSequencesStack = [];
+    final List<LinearMoveSequenceTreeNode> linearChessMoveSequencesStack = [];
+
+    final rootNode = LinearMoveSequenceTreeNode.rootNodeWithLateChildrenInit();
+    linearChessMoveSequencesStack.add(rootNode);
 
     game.traverse((board, node) {
       if (node.rootNode) return; // Root node has no visualization
@@ -57,32 +54,18 @@ class LinearChessMoveSequences {
           linearChessMoveSequencesStack.removeLast();
         }
 
-        var newSequence = LinearChessMoveSequence._(
-            depth: linearChessMoveSequencesStack.length);
-        linearChessMoveSequencesOut.add(newSequence);
+        final parent = linearChessMoveSequencesStack.last;
+        final newSequence =
+            LinearMoveSequenceTreeNode.withLateChildrenInit(parent: parent);
+        parent.children.add(newSequence);
         linearChessMoveSequencesStack.add(newSequence);
       }
       final boardCopy = captureBoards ? board.copy() : null;
       linearChessMoveSequencesStack.last._addSequenceItem(
           LinearChessMoveSequenceItem(node: node, board: boardCopy));
     });
-    return LinearChessMoveSequences(linearChessMoveSequencesOut);
+    return LinearMoveSequenceTree(rootNode);
   }
-
-  @override
-  String toString() => 'LinearChessMoveSequences(\n'
-      '  sequences: [\n'
-      '    ${sequences.join(',\n    ')}\n'
-      '  ]\n'
-      ')';
-
-  @override
-  bool operator ==(Object other) =>
-      other is LinearChessMoveSequences &&
-      _listEquals(sequences, other.sequences);
-
-  @override
-  int get hashCode => sequences.hashCode;
 }
 
 /// A linear consecutive chunk of chess moves.
@@ -91,39 +74,35 @@ class LinearChessMoveSequences {
 /// 1. decision points in the tree (nodes, which have multiple children),
 /// 2. the root node (not including the root node itself)
 /// 3. or the end of the variation
-class LinearChessMoveSequence {
-  final int depth;
+class LinearMoveSequenceTreeNode extends TreeNode<LinearMoveSequenceTreeNode> {
   final List<LinearChessMoveSequenceItem> sequence;
 
-  @visibleForTesting
-  LinearChessMoveSequence({required this.depth, required this.sequence});
-  LinearChessMoveSequence._({required this.depth}) : sequence = [];
+  /// {@macro tree_node_root_node_with_late_children_init}
+  LinearMoveSequenceTreeNode.rootNodeWithLateChildrenInit()
+      : sequence = [],
+        super.rootNodeWithLateChildrenInit();
+
+  /// {@macro tree_node_with_late_children_init}
+  LinearMoveSequenceTreeNode.withLateChildrenInit(
+      {required LinearMoveSequenceTreeNode parent})
+      : sequence = [],
+        super.withLateChildrenInit(parent: parent);
+
+  /// {@macro tree_node_root_node_with_late_parent_init}
+  LinearMoveSequenceTreeNode.rootNodeWithLateParentInit({
+    required this.sequence,
+    required List<LinearMoveSequenceTreeNode> children,
+  }) : super.rootNodeWithLateParentInit(children: children);
+
+  /// {@macro tree_node_with_late_parent_init}
+  LinearMoveSequenceTreeNode.withLateParentInit(
+      {required this.sequence,
+      required List<LinearMoveSequenceTreeNode> children})
+      : super.withLateParentInit(children: children);
 
   void _addSequenceItem(LinearChessMoveSequenceItem item) {
     sequence.add(item);
   }
-
-  @override
-  String toString() {
-    final sequenceString = sequence.isEmpty
-        ? 'empty'
-        : sequence
-            .asMap()
-            .entries
-            .map((mapEntry) => mapEntry.value.node.move!.toHumanReadable(
-                showBlackMoveNumberIndicator: mapEntry.key == 0))
-            .join(' ');
-    return 'LinearChessMoveSequence(depth: $depth, sequence: $sequenceString)';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      other is LinearChessMoveSequence &&
-      depth == other.depth &&
-      _listEquals(sequence, other.sequence);
-
-  @override
-  int get hashCode => depth ^ sequence.hashCode;
 }
 
 class LinearChessMoveSequenceItem {

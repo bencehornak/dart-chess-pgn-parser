@@ -5,47 +5,51 @@ import 'test_data.dart' as test_data;
 
 void main() {
   final game = test_data.buildChessHalfMoveTree();
-  final expectedLinearChessMoveSequences = LinearChessMoveSequences(
-    [
-      // 1. d4
-      LinearChessMoveSequence(
-        depth: 0,
-        sequence: [
-          LinearChessMoveSequenceItem(node: game.rootNode.children[0]),
-        ],
-      ),
-      // 1. e4
-      LinearChessMoveSequence(
-        depth: 0,
-        sequence: [
-          LinearChessMoveSequenceItem(node: game.rootNode.children[1]),
-        ],
-      ),
-      // 1... e5 2. Nc3 Nf6
-      LinearChessMoveSequence(
-        depth: 1,
-        sequence: [
-          LinearChessMoveSequenceItem(
-              node: game.rootNode.children[1].children[0]),
-          LinearChessMoveSequenceItem(
-              node: game.rootNode.children[1].children[0].children[0]),
-          LinearChessMoveSequenceItem(
-              node: game
-                  .rootNode.children[1].children[0].children[0].children[0]),
-        ],
-      ),
-      // 1... e6
-      LinearChessMoveSequence(
-        depth: 1,
-        sequence: [
-          LinearChessMoveSequenceItem(
-              node: game.rootNode.children[1].children[1]),
-        ],
-      ),
-    ],
-  );
+  final expectedLinearChessMoveSequences = LinearMoveSequenceTree(
+    LinearMoveSequenceTreeNode.rootNodeWithLateParentInit(
+      sequence: [],
+      children: [
+        // 1. d4
+        LinearMoveSequenceTreeNode.withLateParentInit(
+          sequence: [
+            LinearChessMoveSequenceItem(node: game.rootNode.children[0]),
+          ],
+          children: [],
+        ),
+        // 1. e4
+        LinearMoveSequenceTreeNode.withLateParentInit(
+          sequence: [
+            LinearChessMoveSequenceItem(node: game.rootNode.children[1]),
+          ],
+          children: [
+            // 1... e5 2. Nc3 Nf6
+            LinearMoveSequenceTreeNode.withLateParentInit(
+              sequence: [
+                LinearChessMoveSequenceItem(
+                    node: game.rootNode.children[1].children[0]),
+                LinearChessMoveSequenceItem(
+                    node: game.rootNode.children[1].children[0].children[0]),
+                LinearChessMoveSequenceItem(
+                    node: game.rootNode.children[1].children[0].children[0]
+                        .children[0]),
+              ],
+              children: [],
+            ),
+            // 1... e6
+            LinearMoveSequenceTreeNode.withLateParentInit(
+              sequence: [
+                LinearChessMoveSequenceItem(
+                    node: game.rootNode.children[1].children[1]),
+              ],
+              children: [],
+            ),
+          ],
+        ),
+      ],
+    ),
+  )..fixParentsRecursively();
   test('fromGame()', () {
-    final sequences = LinearChessMoveSequences.fromGame(game);
+    final sequences = LinearMoveSequenceTree.fromGame(game);
 
     expect(
       sequences,
