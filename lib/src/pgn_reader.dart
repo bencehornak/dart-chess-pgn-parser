@@ -3,7 +3,6 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
-import 'package:chess_pgn_parser/src/chess_game_tags.dart';
 import 'package:chess_pgn_parser/src/generated/PGNListener.dart';
 import 'package:logging/logging.dart';
 

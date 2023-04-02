@@ -1,6 +1,5 @@
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
-import 'package:chess_pgn_parser/src/chess_game_tags.dart';
 
 ChessHalfMoveTree buildChessHalfMoveTree() => ChessHalfMoveTree(
     tags: buildChessGameTags(),
