@@ -1,5 +1,6 @@
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/src/evaluation.dart';
+import 'package:chess_pgn_parser/src/shape.dart';
 
 class AnnotatedMove extends Move {
   // Let's cache the moveNumber and the SAN notation for better performance
@@ -10,6 +11,7 @@ class AnnotatedMove extends Move {
   double? elapsedMoveTime;
   double? clock;
   Evaluation? evaluation;
+  final List<VisualAnnotation> visualAnnotations = [];
 
   /// Returns the number of half moves in the game, including this one.
   ///

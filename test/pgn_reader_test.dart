@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:antlr4/antlr4.dart';
+import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
+import 'package:chess_pgn_parser/src/evaluation.dart';
+import 'package:chess_pgn_parser/src/shape.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
@@ -129,5 +132,89 @@ void main() {
                     .having((token) => token.line, "line", 9)
                     .having((token) => token.charPositionInLine,
                         "charPositionInLine", 10))));
+  });
+
+  group('Non-standard comment annotations', () {
+    late ChessHalfMoveTree tree;
+
+    AnnotatedMove getMove(String san) => tree.rootNode.children
+        .firstWhere((node) => node.move!.san == san)
+        .move!;
+
+    setUpAll(() async {
+      String input =
+          await File('test/resources/pgn/nonstandard-annotations.pgn')
+              .readAsString();
+      final reader = PgnReader.fromString(input);
+
+      tree = reader.parse()[0];
+    });
+
+    test('%clk is parsed', () {
+      final move = getMove('a3');
+      expect(move.clock, 1 * 3600 + 55 * 60 + 21);
+    });
+    test('%emt is parsed', () {
+      final move = getMove('b3');
+      expect(move.elapsedMoveTime, 5 * 60 + 42);
+    });
+    test('%eval is parsed (PawnEvaluation)', () {
+      final move = getMove('c3');
+      expect(move.evaluation,
+          PawnEvaluation(difference: -6.05, analysisDepth: null));
+    });
+    test('%eval is parsed (MateInNEvaluation)', () {
+      final move = getMove('d3');
+      expect(move.evaluation, MateInNEvaluation(n: 3, analysisDepth: null));
+    });
+    test('%cal is parsed', () {
+      final move = getMove('e3');
+      expect(move.visualAnnotations, [
+        Arrow(
+            color: VisualAnnotationColor.green,
+            from: Chess.SQUARES['c7'],
+            to: Chess.SQUARES['f4']),
+        Arrow(
+            color: VisualAnnotationColor.yellow,
+            from: Chess.SQUARES['e4'],
+            to: Chess.SQUARES['b7']),
+        Arrow(
+            color: VisualAnnotationColor.red,
+            from: Chess.SQUARES['c4'],
+            to: Chess.SQUARES['c5']),
+        Arrow(
+            color: VisualAnnotationColor.blue,
+            from: Chess.SQUARES['a2'],
+            to: Chess.SQUARES['a4']),
+      ]);
+    });
+    test('%csl is parsed', () {
+      final move = getMove('f3');
+      expect(move.visualAnnotations, [
+        HighlightedSquare(
+            color: VisualAnnotationColor.green, square: Chess.SQUARES['c7']),
+        HighlightedSquare(
+            color: VisualAnnotationColor.green, square: Chess.SQUARES['d5']),
+        HighlightedSquare(
+            color: VisualAnnotationColor.red, square: Chess.SQUARES['d6']),
+      ]);
+    });
+    test('Multiple annotations are parsed', () {
+      final move = getMove('g3');
+      expect(move.clock, isNotNull);
+      expect(move.visualAnnotations, isNotEmpty);
+    });
+    test('empty comment next to non-standard annotation', () {
+      final move = getMove('a3');
+      expect(move.comment, isNull);
+    });
+    test('comment parsed before non-standard annotation', () {
+      final move = getMove('c3');
+      expect(move.comment, 'test');
+    });
+    test('comment parsed after non-standard annotation', () {
+      final move = getMove('e3');
+      expect(move.comment, 'test');
+    });
   });
 }

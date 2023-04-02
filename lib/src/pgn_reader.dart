@@ -3,7 +3,9 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
+import 'package:chess_pgn_parser/src/evaluation.dart';
 import 'package:chess_pgn_parser/src/generated/PGNListener.dart';
+import 'package:chess_pgn_parser/src/shape.dart';
 import 'package:logging/logging.dart';
 
 import 'generated/PGNLexer.dart';
@@ -263,12 +265,73 @@ class _MoveTextParseTreeListener extends PGNListener {
     _assertWithContextFeedback(ctx,
         nodeStack.isNotEmpty || nodeStack.last.rootNode, 'Unexpected comment');
     final commentWithBraces = ctx.text;
-    final comment = commentWithBraces
+    final rawComment = commentWithBraces
         .replaceFirst(RegExp(r'^{'), '')
         .replaceFirst(RegExp(r'}$'), '')
         // Replace white-spaces in comments with space
         .replaceAll(RegExp(r'\s+'), ' ');
-    nodeStack.last.move!.comment = comment;
+
+    _log.finest('Parsing comment: \'$rawComment\'');
+
+    // The following section parses non-standard comment annotations
+    // See https://chess.stackexchange.com/a/18421
+    double? elapsedMoveTime;
+    double? clock;
+    Evaluation? evaluation;
+    final visualAnnotations = <VisualAnnotation>[];
+    String? comment = rawComment.replaceAllMapped(
+        RegExp(
+            r'\s?\[%(emt|clk)\s(\d{1,5}):(\d{1,2}):(\d{1,2}(?:\.\d{0,3})?)\]\s?'),
+        (match) {
+      final annotation = match.group(1)!,
+          hours = match.group(2)!,
+          minutes = match.group(3)!,
+          seconds = match.group(4)!;
+      final double value = int.parse(hours) * 3600 +
+          int.parse(minutes) * 60 +
+          double.parse(seconds);
+      if (annotation == 'emt') {
+        elapsedMoveTime = value;
+        _log.finest('ElapsedMoveTime: $elapsedMoveTime');
+      } else if (annotation == 'clk') {
+        clock = value;
+        _log.finest('Clock: $clock');
+      }
+      return ' ';
+    }).replaceAllMapped(
+        RegExp(
+            r'\s?\[%(?:csl|cal)\s+([RGYB][a-h][1-8](?:[a-h][1-8]\s?)?(?:,\s?[RGYB][a-h][1-8](?:[a-h][1-8])?)*)\]\s?'),
+        (match) {
+      final shapes = match.group(1)!;
+      for (final shape in shapes.split(',')) {
+        var visualAnnotation = VisualAnnotation.fromPGN(shape.trim());
+        visualAnnotations.add(visualAnnotation);
+        _log.finest('Visual annotation added: $visualAnnotation');
+      }
+      return ' ';
+    }).replaceAllMapped(
+        RegExp(
+            r'\s?\[%eval\s(?:#([+-]?\d{1,5})|([+-]?(?:\d{1,5}|\d{0,5}\.\d{1,2})))(?:,(\d{1,5}))?\]\s?'),
+        (match) {
+      final mate = match.group(1), pawns = match.group(2), d = match.group(3);
+      final depth = d != null ? int.parse(d) : null;
+      evaluation = mate != null
+          ? MateInNEvaluation(n: int.parse(mate), analysisDepth: depth)
+          : PawnEvaluation(
+              difference: double.parse(pawns!), analysisDepth: depth);
+      _log.finest('Evaluation added: $evaluation');
+      return ' ';
+    }).trim();
+    if (comment.isEmpty) comment = null;
+
+    _log.fine('Comment: $comment');
+
+    nodeStack.last.move!
+      ..comment = comment
+      ..elapsedMoveTime = elapsedMoveTime
+      ..clock = clock
+      ..evaluation = evaluation
+      ..visualAnnotations.addAll(visualAnnotations);
   }
 
   @override
