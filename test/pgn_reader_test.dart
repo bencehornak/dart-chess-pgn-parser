@@ -19,7 +19,7 @@ void main() {
     Result: *
   moves:
     1. e4
-      1... e5 2. Nc3 {but the Vieanna-opening is great too} Nf6
+      1... e5 2. Nc3 {but the Vienna-opening is great too} Nf6
       1... e6
     1. d4 {d4 openings are great}
 )]''';
