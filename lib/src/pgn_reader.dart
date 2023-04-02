@@ -267,7 +267,7 @@ class _MoveTextParseTreeListener extends PGNListener {
         .replaceFirst(RegExp(r'^{'), '')
         .replaceFirst(RegExp(r'}$'), '')
         // Replace white-spaces in comments with space
-        .replaceAll(RegExp(r'\w+'), ' ');
+        .replaceAll(RegExp(r'\s+'), ' ');
     nodeStack.last.move!.comment = comment;
   }
 
