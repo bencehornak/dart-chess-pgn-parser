@@ -148,7 +148,7 @@ ChessHalfMoveTree(
     Site: Test Site
     Date: 2023.03.06
     Round: 23
-    White: Bence Hornák, His friends
+    White: Bence Hornák:His friends
     Black: Bence Hornák
     Result: *
   moves:
