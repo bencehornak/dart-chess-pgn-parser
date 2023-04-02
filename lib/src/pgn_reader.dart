@@ -265,7 +265,9 @@ class _MoveTextParseTreeListener extends PGNListener {
     final commentWithBraces = ctx.text;
     final comment = commentWithBraces
         .replaceFirst(RegExp(r'^{'), '')
-        .replaceFirst(RegExp(r'}$'), '');
+        .replaceFirst(RegExp(r'}$'), '')
+        // Replace white-spaces in comments with space
+        .replaceAll(RegExp(r'\w+'), ' ');
     nodeStack.last.move!.comment = comment;
   }
 
