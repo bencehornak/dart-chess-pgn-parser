@@ -3,10 +3,20 @@ import 'package:chess_pgn_parser/chess_pgn_parser.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final firstWhiteMove = AnnotatedMove(Color.WHITE, Chess.SQUARES['e2'],
-      Chess.SQUARES['e4'], 0, PieceType.PAWN, null, null, 1, 'e4');
-  final firstBlackMove = AnnotatedMove(Color.BLACK, Chess.SQUARES['e7'],
-      Chess.SQUARES['e5'], 0, PieceType.PAWN, null, null, 1, 'e5');
+  final firstWhiteMove = AnnotatedMove(
+      color: Color.WHITE,
+      from: Chess.SQUARES['e2'],
+      to: Chess.SQUARES['e4'],
+      piece: PieceType.PAWN,
+      moveNumber: 1,
+      san: 'e4');
+  final firstBlackMove = AnnotatedMove(
+      color: Color.BLACK,
+      from: Chess.SQUARES['e7'],
+      to: Chess.SQUARES['e5'],
+      piece: PieceType.PAWN,
+      moveNumber: 1,
+      san: 'e5');
   group('moveNumberIndicator', () {
     test('First white move', () {
       expect(firstWhiteMove.moveNumberIndicator, '1.');

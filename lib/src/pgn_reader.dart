@@ -184,7 +184,8 @@ class _MoveTextParseTreeListener extends PGNListener {
     _board.move(move);
     _log.finest('Board (move=${_board.move_number}):\n${_board.ascii}');
 
-    final annotatedMove = AnnotatedMove.fromMove(move, moveNumber, san);
+    final annotatedMove =
+        AnnotatedMove.fromMove(move, moveNumber: moveNumber, san: san);
     final parent = nodeStack.last;
     final node = ChessHalfMoveTreeNode.withLateChildrenInit(
         move: annotatedMove, parent: parent, variationDepth: _variationDepth);

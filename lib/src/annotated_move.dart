@@ -1,10 +1,15 @@
 import 'package:chess/chess.dart';
+import 'package:chess_pgn_parser/src/evaluation.dart';
 
 class AnnotatedMove extends Move {
   // Let's cache the moveNumber and the SAN notation for better performance
   final int moveNumber;
   final String san;
   String? comment;
+
+  double? elapsedMoveTime;
+  double? clock;
+  Evaluation? evaluation;
 
   /// Returns the number of half moves in the game, including this one.
   ///
@@ -19,29 +24,41 @@ class AnnotatedMove extends Move {
   String get moveNumberIndicator =>
       color == Color.WHITE ? '$moveNumber.' : '$moveNumber...';
 
-  AnnotatedMove(
-    super.color,
-    super.from,
-    super.to,
-    super.flags,
-    super.piece,
-    super.captured,
-    super.promotion,
-    this.moveNumber,
-    this.san,
-  );
+  AnnotatedMove({
+    required Color color,
+    required int from,
+    required int to,
+    int flags = 0,
+    required PieceType piece,
+    PieceType? captured,
+    PieceType? promotion,
+    required this.moveNumber,
+    required this.san,
+    this.elapsedMoveTime,
+    this.clock,
+    this.evaluation,
+  }) : super(color, from, to, flags, piece, captured, promotion);
 
-  AnnotatedMove.fromMove(Move move, int moveNumber, String san)
-      : this(
-          move.color,
-          move.from,
-          move.to,
-          move.flags,
-          move.piece,
-          move.captured,
-          move.promotion,
-          moveNumber,
-          san,
+  AnnotatedMove.fromMove(
+    Move move, {
+    required int moveNumber,
+    required String san,
+    double? elapsedMoveTime,
+    double? clock,
+    Evaluation? evaluation,
+  }) : this(
+          color: move.color,
+          from: move.from,
+          to: move.to,
+          flags: move.flags,
+          piece: move.piece,
+          captured: move.captured,
+          promotion: move.promotion,
+          moveNumber: moveNumber,
+          san: san,
+          elapsedMoveTime: elapsedMoveTime,
+          clock: clock,
+          evaluation: evaluation,
         );
 
   @override
