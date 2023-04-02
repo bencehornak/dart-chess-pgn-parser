@@ -3,6 +3,7 @@ import 'package:chess_pgn_parser/src/tree.dart';
 import 'package:chess_pgn_parser/src/tree_iterator.dart';
 
 import 'annotated_move.dart';
+import 'linear_move_sequence_tree.dart';
 
 T _onlyElement<T>(List<T> list) {
   assert(list.length == 1);
@@ -37,11 +38,6 @@ class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
 
   @override
   String toString() {
-    String formatMove(AnnotatedMove move) {
-      final commentText = move.comment == null ? '' : ' {${move.comment}}';
-      return '${'  ' * (move.totalHalfMoveNumber - 1)}${move.toHumanReadable()}$commentText';
-    }
-
     final buffer = StringBuffer();
     buffer.write('ChessHalfMoveTree(\n');
 
@@ -52,11 +48,26 @@ class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
 
     // Moves
     buffer.write('  moves:\n');
-    traverse((board, node) {
+    // Convert to LinearMoveSequenceTree for a denser notation
+    final sequenceTree = LinearMoveSequenceTree.fromGame(this);
+    sequenceTree.traverse((node) {
       if (node.rootNode) return;
+      buffer.write('  ' * (node.depth + 1));
 
-      buffer.write('    ${formatMove(node.move!)}\n');
+      node.sequence.asMap().forEach((index, sequenceItem) {
+        bool firstOneInSequence = index == 0;
+
+        if (!firstOneInSequence) buffer.write(' ');
+
+        final move = sequenceItem.node.move!;
+        buffer.write(move.toHumanReadable(
+            showBlackMoveNumberIndicator: firstOneInSequence));
+
+        if (move.comment != null) buffer.write(" {${move.comment}}");
+      });
+      buffer.write('\n');
     });
+
     buffer.write(')');
     return buffer.toString();
   }
