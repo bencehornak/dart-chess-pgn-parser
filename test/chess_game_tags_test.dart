@@ -31,17 +31,15 @@ void main() {
   group('Empty values', () {
     ['-', '?'].forEach((emptyString) {
       test('\'$emptyString\' is treated as empty', () {
-        final tags = test_data.buildChessGameTags(overrides: {
-          'Round': [emptyString]
-        });
+        final tags =
+            test_data.buildChessGameTags(overrides: {'Round': emptyString});
         expect(tags.round, isNull);
       });
     });
 
     test('Date with unknown components is treated as empty', () {
-      final tags = test_data.buildChessGameTags(overrides: {
-        'Date': ['1993.??.??']
-      });
+      final tags =
+          test_data.buildChessGameTags(overrides: {'Date': '1993.??.??'});
       expect(tags.date, isNull);
     });
   });

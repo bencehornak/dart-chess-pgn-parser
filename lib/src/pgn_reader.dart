@@ -57,18 +57,17 @@ class PgnReader {
       // name is unescaped
       final name = tagPair.tag_name()!.text;
 
-      // value is double-quoted and is a colon-delimited list
-      final valuesString = tagPair.tag_value()!.text;
-      final valuesStringRegexp = RegExp(r'^"([^"]*)"$');
-      final valuesStringMatch = valuesStringRegexp.firstMatch(valuesString);
+      // value is double-quoted
+      final valueString = tagPair.tag_value()!.text;
+      final valueStringRegexp = RegExp(r'^"([^"]*)"$');
+      final valueStringMatch = valueStringRegexp.firstMatch(valueString);
       _assertWithContextFeedback(
           tagPair,
-          valuesStringMatch != null && valuesStringMatch.group(1) != null,
+          valueStringMatch != null && valueStringMatch.group(1) != null,
           'Incorrect value representation');
-      final valuesStringWithoutQuotes = valuesStringMatch!.group(1)!;
-      final values = valuesStringWithoutQuotes.split(':');
+      final valueStringWithoutQuotes = valueStringMatch!.group(1)!;
 
-      return MapEntry(name, values);
+      return MapEntry(name, valueStringWithoutQuotes);
     }));
 
     return _addErrorContextIfThrows(

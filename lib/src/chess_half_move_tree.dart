@@ -30,8 +30,7 @@ class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
 
     // Tags
     buffer.write('  tags:\n');
-    tags.rawTags.forEach(
-        (key, value) => buffer.write('    $key: ${value.join(', ')}\n'));
+    tags.rawTags.forEach((key, value) => buffer.write('    $key: $value\n'));
 
     // Moves
     buffer.write('  moves:\n');

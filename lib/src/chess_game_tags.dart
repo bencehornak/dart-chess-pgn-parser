@@ -1,7 +1,5 @@
-T _onlyElement<T>(List<T> list) {
-  assert(list.length == 1);
-  return list.first;
-}
+List<String> _parseNameList(String string) =>
+    string.split(':').map((e) => e.trim()).toList();
 
 List<String> _emptyStrings = const ['', '-', '?'];
 String? _nullIfEmpty(String string) =>
@@ -21,7 +19,7 @@ DateTime? _parseDate(String dateString) {
 }
 
 class ChessGameTags {
-  final Map<String, List<String>> rawTags;
+  final Map<String, String> rawTags;
 
   final String? event;
   final String? site;
@@ -42,46 +40,42 @@ class ChessGameTags {
     required this.result,
   });
 
-  factory ChessGameTags.fromRawTags(Map<String, List<String>> rawTags) =>
+  factory ChessGameTags.fromRawTags(Map<String, String> rawTags) =>
       ChessGameTags._(
         rawTags: rawTags,
-        event: _parseTag(
-            rawTags, 'Event', (values) => _nullIfEmpty(_onlyElement(values!))),
-        site: _parseTag(
-            rawTags, 'Site', (values) => _nullIfEmpty(_onlyElement(values!))),
-        date: _parseTag(
-            rawTags, 'Date', (values) => _parseDate(_onlyElement(values!))),
-        round: _parseTag(
-            rawTags, 'Round', (values) => _nullIfEmpty(_onlyElement(values!))),
-        white: _parseTag(rawTags, 'White', (values) => values!),
-        black: _parseTag(rawTags, 'Black', (values) => values!),
-        result: _parseTag(rawTags, 'Result', (values) => _onlyElement(values!)),
+        event: _parseTag(rawTags, 'Event', (values) => _nullIfEmpty(values!)),
+        site: _parseTag(rawTags, 'Site', (values) => _nullIfEmpty(values!)),
+        date: _parseTag(rawTags, 'Date', (values) => _parseDate(values!)),
+        round: _parseTag(rawTags, 'Round', (values) => _nullIfEmpty(values!)),
+        white: _parseTag(rawTags, 'White', (values) => _parseNameList(values!)),
+        black: _parseTag(rawTags, 'Black', (values) => _parseNameList(values!)),
+        result: _parseTag(rawTags, 'Result', (values) => values!),
       );
 
-  static _parseTag<T>(Map<String, List<String>> rawTags, String tagName,
-      T Function(List<String>?) parse) {
-    final tagValues = rawTags[tagName];
+  static _parseTag<T>(
+      Map<String, String> rawTags, String tagName, T Function(String?) parse) {
+    final tagValue = rawTags[tagName];
     try {
-      return parse(tagValues);
+      return parse(tagValue);
     } catch (error) {
       throw ChessGameTagsParsingException(
-          tagName: tagName, tagValues: tagValues, error: error);
+          tagName: tagName, tagValue: tagValue, error: error);
     }
   }
 }
 
 class ChessGameTagsParsingException implements Exception {
   final String tagName;
-  final List<String>? tagValues;
+  final String? tagValue;
   final dynamic error;
 
   ChessGameTagsParsingException({
     required this.tagName,
-    required this.tagValues,
+    required this.tagValue,
     required this.error,
   });
 
   @override
   String toString() =>
-      'Cannot parse tag \'$tagName\', invalid value: \'${tagValues?.join(', ')}\'';
+      'Cannot parse tag \'$tagName\', invalid value: \'$tagValue\'';
 }
