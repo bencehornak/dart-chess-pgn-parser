@@ -8,6 +8,7 @@ jobs:
       - uses: dart-lang/setup-dart@v1
 
       - run: dart pub get
-      - run: dart format --output=none --set-exit-if-changed .
+      # dart format doesn't exlude the generated files
+      # - run: dart format --output=none --set-exit-if-changed .
       - run: dart analyze
       - run: dart test
