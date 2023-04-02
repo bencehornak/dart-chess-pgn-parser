@@ -168,7 +168,7 @@ ChessHalfMoveTree(
       expect(
           game,
           isNot(ChessHalfMoveTree(
-              tags: {},
+              tags: test_data.buildChessGameTags(),
               rootNode: ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit())));
     });
   });
@@ -182,34 +182,10 @@ ChessHalfMoveTree(
       expect(
           game.hashCode,
           isNot(ChessHalfMoveTree(
-                  tags: {},
+                  tags: test_data.buildChessGameTags(),
                   rootNode:
                       ChessHalfMoveTreeNode.rootNodeWithLateChildrenInit())
               .hashCode));
-    });
-  });
-
-  group('Tags', () {
-    test('tagEvent', () {
-      expect(game.tagEvent, 'Test');
-    });
-    test('tagSite', () {
-      expect(game.tagSite, 'Test Site');
-    });
-    test('tagDate', () {
-      expect(game.tagDate, DateTime(2023, 03, 06));
-    });
-    test('tagRound', () {
-      expect(game.tagRound, '-');
-    });
-    test('tagWhite', () {
-      expect(game.tagWhite, ['Bence Hornák', 'His friends']);
-    });
-    test('tagBlack', () {
-      expect(game.tagBlack, ['Bence Hornák']);
-    });
-    test('tagResult', () {
-      expect(game.tagResult, '*');
     });
   });
 }

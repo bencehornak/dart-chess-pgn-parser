@@ -3,6 +3,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:chess/chess.dart';
 import 'package:chess_pgn_parser/chess_pgn_parser.dart';
+import 'package:chess_pgn_parser/src/chess_game_tags.dart';
 import 'package:chess_pgn_parser/src/generated/PGNListener.dart';
 import 'package:logging/logging.dart';
 
@@ -42,15 +43,14 @@ class PgnReader {
     return ChessHalfMoveTree(rootNode: rootNode, tags: tags);
   }
 
-  Map<String, List<String>> _parseGameTagSectionContext(
-      Pgn_gameContext gameContext) {
+  ChessGameTags _parseGameTagSectionContext(Pgn_gameContext gameContext) {
     final tagSection = gameContext.tag_section();
     _assertWithContextFeedback(
         gameContext,
         tagSection != null && tagSection.children != null,
         'Tag section is missing');
 
-    return Map.fromEntries(tagSection!.tag_pairs().map((tagPair) {
+    final rawTags = Map.fromEntries(tagSection!.tag_pairs().map((tagPair) {
       // Tag representation format:
       // [Black "Smith, John Q.:Woodpusher 2000"]
 
@@ -70,6 +70,9 @@ class PgnReader {
 
       return MapEntry(name, values);
     }));
+
+    return _addErrorContextIfThrows(
+        tagSection, () => ChessGameTags.fromRawTags(rawTags));
   }
 
   ChessHalfMoveTreeNode _parseGameMoveTextSectionContext(
@@ -276,6 +279,14 @@ class _MoveTextParseTreeListener extends PGNListener {
 void _assertWithContextFeedback(
     ParserRuleContext ctx, bool condition, String message) {
   if (!condition) _failWithContextFeedback(ctx, message);
+}
+
+T _addErrorContextIfThrows<T>(ParserRuleContext ctx, T Function() body) {
+  try {
+    return body();
+  } on Exception catch (error) {
+    throw PgnReaderException(ctx, error.toString());
+  }
 }
 
 Never _failWithContextFeedback(ParserRuleContext ctx, String message) =>

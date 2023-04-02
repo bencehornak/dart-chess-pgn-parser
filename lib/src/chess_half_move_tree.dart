@@ -1,30 +1,13 @@
 import 'package:chess/chess.dart';
+import 'package:chess_pgn_parser/src/chess_game_tags.dart';
 import 'package:chess_pgn_parser/src/tree.dart';
 import 'package:chess_pgn_parser/src/tree_iterator.dart';
 
 import 'annotated_move.dart';
 import 'linear_move_sequence_tree.dart';
 
-T _onlyElement<T>(List<T> list) {
-  assert(list.length == 1);
-  return list.first;
-}
-
-List<String> _emptyStrings = const ['', '-'];
-String? _nullIfEmpty(String string) =>
-    _emptyStrings.contains(string) ? null : string;
-
 class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
-  final Map<String, List<String>> tags;
-
-  String? get tagEvent => _nullIfEmpty(_onlyElement(tags['Event']!));
-  String? get tagSite => _nullIfEmpty(_onlyElement(tags['Site']!));
-  DateTime get tagDate =>
-      DateTime.parse(_onlyElement(tags['Date']!).replaceAll('.', '-'));
-  String? get tagRound => _nullIfEmpty(_onlyElement(tags['Round']!));
-  List<String> get tagWhite => tags['White']!;
-  List<String> get tagBlack => tags['Black']!;
-  String get tagResult => _onlyElement(tags['Result']!);
+  final ChessGameTags tags;
 
   ChessHalfMoveTree(
       {required ChessHalfMoveTreeNode rootNode, required this.tags})
@@ -47,7 +30,7 @@ class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
 
     // Tags
     buffer.write('  tags:\n');
-    tags.forEach(
+    tags.rawTags.forEach(
         (key, value) => buffer.write('    $key: ${value.join(', ')}\n'));
 
     // Moves
