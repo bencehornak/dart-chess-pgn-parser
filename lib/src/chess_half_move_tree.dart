@@ -10,14 +10,18 @@ T _onlyElement<T>(List<T> list) {
   return list.first;
 }
 
+List<String> _emptyStrings = const ['', '-'];
+String? _nullIfEmpty(String string) =>
+    _emptyStrings.contains(string) ? null : string;
+
 class ChessHalfMoveTree extends Tree<ChessHalfMoveTreeNode> {
   final Map<String, List<String>> tags;
 
-  String get tagEvent => _onlyElement(tags['Event']!);
-  String get tagSite => _onlyElement(tags['Site']!);
+  String? get tagEvent => _nullIfEmpty(_onlyElement(tags['Event']!));
+  String? get tagSite => _nullIfEmpty(_onlyElement(tags['Site']!));
   DateTime get tagDate =>
       DateTime.parse(_onlyElement(tags['Date']!).replaceAll('.', '-'));
-  String get tagRound => _onlyElement(tags['Round']!);
+  String? get tagRound => _nullIfEmpty(_onlyElement(tags['Round']!));
   List<String> get tagWhite => tags['White']!;
   List<String> get tagBlack => tags['Black']!;
   String get tagResult => _onlyElement(tags['Result']!);
