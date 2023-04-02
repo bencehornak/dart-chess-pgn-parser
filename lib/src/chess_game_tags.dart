@@ -21,6 +21,9 @@ DateTime? _parseDate(String dateString) {
 class ChessGameTags {
   final Map<String, String> rawTags;
 
+  // PGN standard 8.1.1: Seven Tag Roster
+  // For these tags there are certain validations happening when the object is
+  // constructed
   final String? event;
   final String? site;
   final DateTime? date;
@@ -29,8 +32,50 @@ class ChessGameTags {
   final List<String> black;
   final String result;
 
+  // PGN standard 9: Supplemental tag names
+  // For the remaining tags there is no validation
+  // PGN standard 9.1: Player related information
+  String? get whiteElo => rawTags['WhiteElo'];
+  String? get blackElo => rawTags['BlackElo'];
+  String? get whiteUSCF => rawTags['WhiteUSCF'];
+  String? get blackUSCF => rawTags['BlackUSCF'];
+  String? get whiteNA => rawTags['WhiteNA'];
+  String? get blackNA => rawTags['BlackNA'];
+  String? get whiteType => rawTags['WhiteType'];
+  String? get blackType => rawTags['BlackType'];
+
+  // PGN standard 9.2: Event related information
+  String? get eventDate => rawTags['EventDate'];
+  String? get eventSponsor => rawTags['EventSponsor'];
+  String? get section => rawTags['Section'];
+  String? get stage => rawTags['Stage'];
+  String? get board => rawTags['Board'];
+
+  // PGN standard 9.3: Opening information (locale specific)
+  String? get opening => rawTags['Opening'];
+  String? get variation => rawTags['Variation'];
+  String? get subVariation => rawTags['SubVariation'];
+
+  // PGN standard 9.4: Opening information (third party vendors)
+  String? get eco => rawTags['ECO'];
+  String? get nic => rawTags['NIC'];
+
+  // PGN standard 9.5: Time and date related information
+  String? get time => rawTags['Time'];
+  String? get utcTime => rawTags['UTCTime'];
+  String? get utcDate => rawTags['UTCDate'];
+
+  // PGN standard 9.6: Time control
+  String? get timeControl => rawTags['TimeControl'];
+
+  // PGN standard 9.7: Alternative starting positions
+  String? get setUp => rawTags['SetUp'];
+  String? get fen => rawTags['FEN'];
+
   const ChessGameTags._({
     required this.rawTags,
+
+    // PGN standard 8.1.1: Seven Tag Roster
     required this.event,
     required this.site,
     required this.date,
