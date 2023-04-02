@@ -7,7 +7,21 @@ import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final String expectedGameTree = '''
+  StreamSubscription<LogRecord>? loggerSubscription;
+
+  setUpAll(() {
+    Logger.root.level = Level.ALL;
+    loggerSubscription = Logger.root.onRecord.listen((record) {
+      print('${record.level.name}: ${record.time}: ${record.message}');
+    });
+  });
+  tearDownAll(() {
+    Logger.root.level = Level.INFO; // restore default
+    loggerSubscription!.cancel();
+  });
+
+  group('simple.pgn', () {
+    final String expectedGameTree = '''
 [ChessHalfMoveTree(
   tags:
     Event: Test
@@ -24,20 +38,6 @@ void main() {
     1. d4 {d4 openings are great}
 )]''';
 
-  StreamSubscription<LogRecord>? loggerSubscription;
-
-  setUpAll(() {
-    Logger.root.level = Level.ALL;
-    loggerSubscription = Logger.root.onRecord.listen((record) {
-      print('${record.level.name}: ${record.time}: ${record.message}');
-    });
-  });
-  tearDownAll(() {
-    Logger.root.level = Level.INFO; // restore default
-    loggerSubscription!.cancel();
-  });
-
-  group('simple.pgn', () {
     late List<ChessHalfMoveTree> tree;
 
     setUpAll(() async {
