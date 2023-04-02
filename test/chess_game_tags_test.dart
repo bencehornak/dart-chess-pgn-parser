@@ -37,6 +37,13 @@ void main() {
         expect(tags.round, isNull);
       });
     });
+
+    test('Date with unknown components is treated as empty', () {
+      final tags = test_data.buildChessGameTags(overrides: {
+        'Date': ['1993.??.??']
+      });
+      expect(tags.date, isNull);
+    });
   });
   group('Missing required tags', () {
     [

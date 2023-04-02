@@ -7,12 +7,25 @@ List<String> _emptyStrings = const ['', '-', '?'];
 String? _nullIfEmpty(String string) =>
     _emptyStrings.contains(string) ? null : string;
 
+/// Parse a PGN date.
+///
+/// Allowed formats:
+/// - "1992.08.31" -> parsed
+/// - "1993.??.??" -> `null` is returned
+DateTime? _parseDate(String dateString) {
+  if (dateString.contains('?')) return null;
+  final dateRegExp = RegExp(r'^(\d{4})\.(\d{2})\.(\d{2})$');
+  final match = dateRegExp.firstMatch(dateString);
+  return DateTime(int.parse(match!.group(1)!), int.parse(match.group(2)!),
+      int.parse(match.group(3)!));
+}
+
 class ChessGameTags {
   final Map<String, List<String>> rawTags;
 
   final String? event;
   final String? site;
-  final DateTime date;
+  final DateTime? date;
   final String? round;
   final List<String> white;
   final List<String> black;
@@ -37,10 +50,7 @@ class ChessGameTags {
         site: _parseTag(
             rawTags, 'Site', (values) => _nullIfEmpty(_onlyElement(values!))),
         date: _parseTag(
-            rawTags,
-            'Date',
-            (values) =>
-                DateTime.parse(_onlyElement(values!).replaceAll('.', '-'))),
+            rawTags, 'Date', (values) => _parseDate(_onlyElement(values!))),
         round: _parseTag(
             rawTags, 'Round', (values) => _nullIfEmpty(_onlyElement(values!))),
         white: _parseTag(rawTags, 'White', (values) => values!),
