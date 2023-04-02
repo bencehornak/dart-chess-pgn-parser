@@ -87,7 +87,7 @@ ChessGameTags buildChessGameTags() => ChessGameTags.fromRawTags({
       'Event': ['Test'],
       'Site': ['Test Site'],
       'Date': ['2023.03.06'],
-      'Round': ['-'],
+      'Round': ['23'],
       'White': ['Bence Hornák', 'His friends'],
       'Black': ['Bence Hornák'],
       'Result': ['*'],
