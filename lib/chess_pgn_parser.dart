@@ -6,3 +6,4 @@ export 'src/chess_half_move_tree.dart';
 export 'src/pgn_reader.dart';
 export 'src/linear_move_sequence_tree.dart';
 export 'src/chess_game_tags.dart';
+export 'src/shape.dart';
